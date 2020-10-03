@@ -1,0 +1,30 @@
+{
+  "name": "samyak2020",
+  "version": "1.0.0",
+  "description": "RESTful API for samyak 2020",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bhaskarpraveen/Samyak2020.git"
+  },
+  "author": "Bhaskar Praveen Naidu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bhaskarpraveen/Samyak2020/issues"
+  },
+  "homepage": "https://github.com/bhaskarpraveen/Samyak2020#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.10.7"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.8",
+    "@types/mongoose": "^5.7.36",
+    "dotenv": "^8.2.0",
+    "nodemon": "^2.0.4"
+  }
+}
