@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-
+import UsersRouter from './routes/users';
 
 const app:express.Application = express();
 dotenv.config();
@@ -21,8 +21,10 @@ app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 
 // Routes
-
+app.use('/users',UsersRouter);
 
 app.listen(PORT,()=>{
     console.log(`Running on port ${PORT}`);
 })
+
+export default app;
