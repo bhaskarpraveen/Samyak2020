@@ -3,7 +3,8 @@ const router:express.Router = express.Router();
 import User from '../models/users'
 import jwt from 'jsonwebtoken';
 import emailVerification from '../services/email_verification';
-
+import SendMail from '../services/mail';
+import VerifyToken from '../middlewares/verify_token';
 const JWT_KEY =  process.env.JWT_KEY ||'jsonwebtoken'
 
 
@@ -138,4 +139,90 @@ router.post('/email-verification',async function(request:express.Request,respons
 
 })
 
+
+router.post('/forgot-password',async function(request:express.Request,response:express.Response){
+    const {email} = request.body;
+
+    if(email){
+        const user = await User.findOne({email:email});
+
+        if(user){
+            let new_string =  Math.random().toString(36).slice(-8)
+            let new_password = await User.hashPassword(new_string);
+            let promise = User.updateOne({email:email},{$set:{password:String(new_password)}})
+            promise.then(async (doc)=>{
+                let data = {
+                    html:'forgot_password.html',
+                    replacements:{
+                        name:user.name,
+                        password:new_string
+                    },
+                    from:'praveennaidu264@gmail.com',
+                    to:email,
+                    subject:'Password Reset'
+                }
+                await SendMail(data)
+                        .then(res=>{
+                            if(res.status==200)
+                            return response.status(res.status).json({message:'Email successfully sent'});
+                            else
+                            return response.status(res.status).json({message:res.message});
+                        })
+
+            })
+        
+            promise.catch(err=>{
+                return response.status(501).json({message:err.message})
+            })
+        }else{
+            return response.status(501).json({message:'User not found'})
+        }
+    }else{
+        return response.status(501).json({message:'Enter an email'})
+    }
+})
+
+
+interface jwt_request extends express.Request{
+    tokenData?:{userId?:String}
+}
+
+
+router.post('/change-password',VerifyToken,async function(request:jwt_request,response:express.Response){
+    if(request.tokenData){
+        const {userId} = request.tokenData;
+        const {current_password,new_password} = request.body;
+        if(current_password&&new_password){
+                let FindUser = await User.findOne({_id:userId});
+                    if(FindUser){
+                        if(FindUser.isValid(current_password)){
+                            let hash_password = await User.hashPassword(new_password);
+                            let promise = User.updateOne({_id:userId},{$set:{password:String(hash_password)}});
+    
+                            promise.then(doc=>{
+                                return response.status(200).json({message:'Successfully changed'})
+                            })
+    
+                            promise.catch(err=>{
+                                return response.status(501).json({message:err.message})
+                            })
+
+                        }else{
+                            return response.status(501).json({message:'Invalid password'})
+                        }
+                        }else{
+                            return response.status(501).json({message:'User not found'})
+                        }
+                   
+                       
+                
+        }else{
+            return response.status(501).json({message:'Enter valid details'})
+        }
+        
+    
+    }
+    
+   
+})
 export default router;

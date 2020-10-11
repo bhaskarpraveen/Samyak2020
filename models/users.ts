@@ -1,10 +1,11 @@
 import mongoose, { model,Document,Model } from 'mongoose';
 import bcrypt from 'bcryptjs';
-
+import generateSamyakId from '../services/samyak_id_generation';
 
 //schema fields and methods
 interface IUser extends Document{
-    name:string
+    samyak_id: number,
+    name:string,
     password:string,
     email:string,
     mobile:string,
@@ -42,7 +43,8 @@ let userSchema =   new mongoose.Schema({
     email_verified: { type: Number, default: 0 },
     role: { type: String, enum: ['Admin', 'Organiser', 'Student'], default: 'Student' },
     created_at: { type: Date, default: Date.now },
-    updated_at: { type: Date }
+    updated_at: { type: Date },
+    samyak_id:{type:String}
 });
 
 //returns hashed password
@@ -60,8 +62,14 @@ userSchema.methods.isVerified=function isVerified(){
 }
 //returns if the user is active/blocked
 userSchema.methods.verifyStatus=function verifyStatus(){
-return this.status
+    return this.status
 }
 
- 
+//creates a unique samyak id 
+userSchema.pre('save',async  function(done){
+    let id_string=await generateSamyakId();
+    this.set('samyak_id',id_string);
+    
+    done();
+}) 
 export default model<IUser,IUserModel>('User',userSchema);

@@ -1,7 +1,9 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import cors from 'cors';
 import UsersRouter from './routes/users';
+import AdminRouter from './routes/administration';
 
 const app:express.Application = express();
 dotenv.config();
@@ -19,9 +21,11 @@ connection.once('open',()=>{
 // Express middlewares
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
+app.use(cors())
 
 // Routes
 app.use('/users',UsersRouter);
+app.use('/administration',AdminRouter);
 
 app.listen(PORT,()=>{
     console.log(`Running on port ${PORT}`);

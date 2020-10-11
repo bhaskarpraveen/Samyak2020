@@ -29,11 +29,11 @@ let SendMail = async function(data:emailData){
 try{
     let html =await fs.readFileSync('templates/'+data.html,{encoding:'utf-8'})
        
-    var template = handlebars.compile(html);    
+    let template = handlebars.compile(html);    
 
-    var htmlToSend = template(data.replacements);
+    let htmlToSend = template(data.replacements);
     
-    var mailOptions = {
+    let mailOptions = {
         from: data.from,
         to:data.to, 
         subject: data.subject,
