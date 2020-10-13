@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import UsersRouter from './routes/users';
 import AdminRouter from './routes/administration';
-
+import RoleRouter from './routes/roles';
 const app:express.Application = express();
 dotenv.config();
 const PORT = process.env.PORT || 5000;
@@ -26,6 +26,8 @@ app.use(cors())
 // Routes
 app.use('/users',UsersRouter);
 app.use('/administration',AdminRouter);
+app.use('/roles',RoleRouter);
+
 
 app.listen(PORT,()=>{
     console.log(`Running on port ${PORT}`);

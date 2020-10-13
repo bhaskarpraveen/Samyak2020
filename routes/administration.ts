@@ -3,7 +3,9 @@ import User from '../models/users';
 import VerifyAdministration from '../middlewares/verify_administration';
 import VerifyToken from '../middlewares/verify_token';
 import  jwt from 'jsonwebtoken';
-
+import Role from '../models/roles';
+import Permission from '../models/permissions';
+import UserRole from '../models/user_roles';
 const router:express.Router = express.Router();
 const JWT_KEY =  process.env.JWT_KEY ||'jsonwebtoken'
 
@@ -24,6 +26,7 @@ router.post('/login',async function(request:express.Request,response:express.Res
                     if(user.isVerified()){
                         //check email verification
                         if(user.verifyStatus()){
+                            console.log(['Admin','Organiser'].includes(user.role))
                             if(['Admin','Organiser'].includes(user.role)){
                                 let token = jwt.sign({email:email,userId:user._id},JWT_KEY,{expiresIn:'3h'})
                                  return response.status(200).json({token:token})
@@ -60,7 +63,7 @@ router.get('/all-users',VerifyToken,VerifyAdministration,async function(request:
 
 //delete a user
 router.delete('/delete-user',VerifyToken,VerifyAdministration,async function(request:jwt_request,response:express.Response){
-    const {userId} = request.body;
+    const {userId} = request.query;
     if(userId){
         let user = await User.findOne({_id:userId});
         if(user){
@@ -105,7 +108,7 @@ router.post('/edit-user',VerifyToken,VerifyAdministration,async function(request
             return response.status(501).json({message:'No user found'})
         }
     }else{
-        return response.status(501).json({message:'Enter user id'});
+        return response.status(501).json({message:'Enter all details'});
     }
 })
 
@@ -132,5 +135,7 @@ router.post('/account-status',VerifyToken,VerifyAdministration,async function(re
         return response.status(501).json({message:'Enter all details'})
     }
 })
+
+
 
 export default router;
