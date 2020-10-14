@@ -43,7 +43,27 @@ router.post('/add-role',async function(request:express.Request,response:express.
 
 router.get('/all-roles',async function(request:express.Request,response:express.Response){
 
-    let roles = await Role.find({});
+    let roles = await Role.aggregate([
+    {
+        $lookup:{
+            from: 'permissions',
+            localField: "_id",
+            foreignField: "role_id",
+            as: "permissions"        
+        }
+    },
+    {
+
+    $project:{
+        'permissions._id':0,
+        'permissions.role_id':0,
+        '__v':0,
+        'permissions.__v':0,
+        
+    }
+    }
+
+])
     return response.status(200).json({roles:roles});
     
 })
@@ -52,7 +72,7 @@ router.post('/edit-role',async function(request:express.Request,response:express
 
     if(current_roleId&&new_role){
         let findRole = Role.findOne({_id:current_roleId});
-        if(!findRole){
+        if(findRole){
             let promise = Role.updateOne({_id:current_roleId},{$set:{name:new_role}});
             promise.then(doc=>{
                 return response.status(200).json({message:'Successfully updated',doc:doc})
@@ -129,6 +149,7 @@ router.post('/manage-permissions',async function(request:express.Request,respons
         return response.status(501).json({message:'Enter valid details'})
     }
 })
+
 
 router.post('/add-UserRole',async function(request:express.Request,response:express.Response){
     const {userId,RoleId} = request.body;
