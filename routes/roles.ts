@@ -115,19 +115,13 @@ router.post('/delete-role',async function(request:express.Request,response:expre
 
 router.post('/manage-permissions',async function(request:express.Request,response:express.Response){
     let {roleId,permission} = request.body;
-    let check=1;
-    try{
-        eval(permission);
-    }catch{
-        check=0;
-    }
-    if(roleId&&check&&permission){
+    if(roleId&&permission){
         const findRole = await Role.findOne({_id:roleId});
         if(findRole){
             let new_permission = await Permission.findOne({role_id:findRole._id})
             if(new_permission){
-                if(!permission)permission=[];
-                    new_permission.permissions=eval(permission);
+                if(permission.Users&&permission.Events){
+                    new_permission.permissions=permission
                     let promise = new_permission.save();
                     promise.then(doc=>{
                         return response.status(200).json({message:'Successfully added',doc:doc})
@@ -136,8 +130,10 @@ router.post('/manage-permissions',async function(request:express.Request,respons
                     promise.catch(err=>{
                         return response.status(501).json({message:err.message})
                     })
-               
-               
+                }else{
+                    return response.status(501).json({message:'Enter valid permissions'})
+                }
+                    
             }else{
                 return response.status(501).json({message:'Permission not found'})
             }
