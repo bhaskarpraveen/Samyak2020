@@ -62,13 +62,14 @@ router.get('/all-users',VerifyToken,VerifyAdministration,async function(request:
 })
 
 //delete a user
-router.delete('/delete-user',VerifyToken,VerifyAdministration,async function(request:jwt_request,response:express.Response){
-    const {userId} = request.query;
+router.post('/delete-user',VerifyToken,VerifyAdministration,async function(request:jwt_request,response:express.Response){
+    const {userId} = request.body;
     if(userId){
         let user = await User.findOne({_id:userId});
         if(user){
              User.findOneAndDelete({_id:userId})
-                .then(()=>{
+                .then(async ()=>{
+                    await UserRole.deleteOne({user_id:userId});
                     return response.status(200).json({message:'successfully deleted'})
                 })
                 .catch(err=>{

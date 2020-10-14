@@ -48,12 +48,12 @@ router.get('/all-roles',async function(request:express.Request,response:express.
     
 })
 router.post('/edit-role',async function(request:express.Request,response:express.Response){
-    const {current_role,new_role} = request.body;
+    const {current_roleId,new_role} = request.body;
 
-    if(current_role&&new_role){
-        let findRole = Role.findOne({name:current_role});
+    if(current_roleId&&new_role){
+        let findRole = Role.findOne({_id:current_roleId});
         if(!findRole){
-            let promise = Role.updateOne({name:current_role},{$set:{name:new_role}});
+            let promise = Role.updateOne({_id:current_roleId},{$set:{name:new_role}});
             promise.then(doc=>{
                 return response.status(200).json({message:'Successfully updated',doc:doc})
             });
@@ -69,8 +69,8 @@ router.post('/edit-role',async function(request:express.Request,response:express
     }
 })
 
-router.delete('/delete-role',async function(request:express.Request,response:express.Response){
-    let {RoleId} = request.query;
+router.post('/delete-role',async function(request:express.Request,response:express.Response){
+    let {RoleId} = request.body;
 
     if(RoleId){
         let role =await Role.findOne({_id:RoleId});
@@ -78,7 +78,8 @@ router.delete('/delete-role',async function(request:express.Request,response:exp
             let role_id =role._id
             Role.deleteOne({_id:RoleId})
                 .then(async ()=>{
-                    await Permission.deleteOne({role_id:role_id})
+                    await Permission.deleteOne({role_id:role_id});
+                    await UserRole.deleteOne({role_id:RoleId});
                     return response.status(200).json({message:'Successfully deleted'})
                 })
                 .catch(err=>{
@@ -129,4 +130,89 @@ router.post('/manage-permissions',async function(request:express.Request,respons
     }
 })
 
+router.post('/add-UserRole',async function(request:express.Request,response:express.Response){
+    const {userId,RoleId} = request.body;
+
+    if(userId&&RoleId){
+        let user = await User.findOne({_id:userId});
+        if(user){
+            let role = await Role.findOne({_id:RoleId});
+            if(role){
+                const new_user_role = new UserRole({
+                    user_id:user._id,
+                    role_id:role._id
+                });
+
+                const promise = new_user_role.save();
+                promise.then(doc=>{
+                    return response.status(200).json({message:'Successfully saved',doc:doc});
+                })
+                promise.catch(err=>{
+                    return response.status(501).json({message:err.message});
+                })
+            }else{
+                return response.status(501).json({message:'Invalid found'});
+            }
+        }else{
+            return response.status(501).json({message:'User not found'});
+        }
+    }else{
+        return response.status(501).json({message:'Enter all details'});
+    }
+});
+
+router.post('edit-UserRole',async function(request,response){
+    const {userId,RoleId} = request.body;
+
+    if(userId&&RoleId){
+        let user = await UserRole.findOne({user_id:userId});
+        if(user){
+            let role = await Role.findOne({_id:RoleId});
+            if(role){
+                const promise = UserRole.updateOne({user_id:userId},{$set:{role_id:RoleId}});
+                promise.then(doc=>{
+                    return response.status(200).json({message:'Successfully saved',doc:doc});
+                })
+                promise.catch(err=>{
+                    return response.status(501).json({message:err.message});
+                })
+            }else{
+                return response.status(501).json({message:'Invalid found'});
+            }
+        }else{
+            return response.status(501).json({message:'User not found'});
+        }
+    }else{
+        return response.status(501).json({message:'Enter all details'});
+    }
+});
+
+
+router.post('/delete-UserRole',async function(request:express.Request,response:express.Response){
+    const {userId} =  request.body;
+
+    if(userId){
+        let user = UserRole.findOne({user_id:userId});
+        if(user){
+            let promise = UserRole.deleteOne({user_id:userId});
+
+            promise.then(()=>{
+                return response.status(200).json({message:'Deleted successfully'});
+            })
+            promise.catch(err=>{
+                return response.status(501).json({message:err.message})
+            })
+        }else{
+            return response.status(201).json({message:'User not found'})
+        }
+
+    }else{
+        return response.status(501).json({message:'Enter all details'})
+    }
+});
+
+router.get('/all-UserRoles',async function(request:express.Request,response:express.Response){
+    let user_roles = await UserRole.find({});
+    return response.status(200).json({user_roles:user_roles});
+})
 export default router;
