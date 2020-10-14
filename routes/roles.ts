@@ -121,7 +121,21 @@ router.post('/manage-permissions',async function(request:express.Request,respons
             let new_permission = await Permission.findOne({role_id:findRole._id})
             if(new_permission){
                 if(permission.Users&&permission.Events){
-                    new_permission.permissions=permission
+                    let obj = {
+                        Users:{
+                            add:permission.Users.add,
+                            view:permission.Users.view,
+                            edit:permission.Users.edit,
+                            delete:permission.Users.delete
+                        },
+                        Events:{
+                            add:permission.Events.add,
+                            view:permission.Events.view,
+                            edit:permission.Events.edit,
+                            delete:permission.Events.delete
+                        }
+                    }
+                    new_permission.permissions=obj;
                     let promise = new_permission.save();
                     promise.then(doc=>{
                         return response.status(200).json({message:'Successfully added',doc:doc})

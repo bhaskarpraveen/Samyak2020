@@ -14,16 +14,16 @@ RoleSchema.pre('save',async function(){
         role_id:this._id,
         permissions:{
             Users:{
-                add:0,
-                view:0,
-                edit:0,
-                delete:0
+                add:false,
+                view:false,
+                edit:false,
+                delete:false
             },
             Events:{
-                add:0,
-                view:0,
-                edit:0,
-                delete:0
+                add:false,
+                view:false,
+                edit:false,
+                delete:false
             }
         }
         });

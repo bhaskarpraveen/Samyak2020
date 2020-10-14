@@ -5,7 +5,7 @@ import { Schema, Document,model }  from "mongoose";
 
 interface IPermission extends Document{
     role_id:Schema.Types.ObjectId,
-    permissions:Array<Object>
+    permissions:Object
 }
 
 let PermissionSchema = new Schema({
