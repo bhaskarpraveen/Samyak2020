@@ -26,8 +26,8 @@ router.post('/login',async function(request:express.Request,response:express.Res
                     if(user.isVerified()){
                         //check email verification
                         if(user.verifyStatus()){
-                            console.log(['Admin','Organiser'].includes(user.role))
-                            if(['Admin','Organiser'].includes(user.role)){
+                           let role = await UserRole.findOne({user_id:user._id});
+                            if(role){
                                 let token = jwt.sign({email:email,userId:user._id},JWT_KEY,{expiresIn:'3h'})
                                  return response.status(200).json({token:token})
                             }else{

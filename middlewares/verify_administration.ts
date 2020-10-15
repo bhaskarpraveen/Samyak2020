@@ -10,9 +10,9 @@ let VerifyAdministration = async function(request:jwt_request,response:express.R
         const {userId} = request.tokenData;
     const user = await User.findOne({_id:userId})
     if(user){
-        if(['Admin','Organiser'].includes(user.role))
+        // if(['Admin','Organiser'].includes(user.role))
         next();
-        else return response.status(501).json({message:'Authorization failed'})
+        // else return response.status(501).json({message:'Authorization failed'})
     }else{
         return response.status(501).json({message:'Authorization failed'})
     }

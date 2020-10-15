@@ -173,7 +173,7 @@ router.post('/add-UserRole',async function(request:express.Request,response:expr
 
                 if(findUserRole){
                      
-                   let promise =  findUserRole.updateOne({user_id:userId},{$set:{role_id:RoleId}});
+                   let promise =  UserRole.updateOne({user_id:user._id},{$set:{role_id:role._id}});
 
                    promise.then(doc=>{
                        return response.status(200).json({message:'Successfully changed',doc:doc})
@@ -237,5 +237,51 @@ router.post('/delete-UserRole',async function(request:express.Request,response:e
 router.get('/all-UserRoles',async function(request:express.Request,response:express.Response){
     let user_roles = await UserRole.find({});
     return response.status(200).json({user_roles:user_roles});
+});
+
+
+router.get('/check-permission',async function(request:jwt_request,response:express.Response){
+    if(request.tokenData){
+        const {userId} = request.tokenData;
+        const {collection,permission} = request.body;
+    const user = await User.findOne({_id:userId})
+    if(user){
+        let FindRole = await UserRole.findOne({user_id:user._id});
+        if(FindRole){
+            let allRoles= await Role.aggregate([
+                {
+                    $lookup:{
+                        from: 'permissions',
+                        localField: "_id",
+                        foreignField: "role_id",
+                        as: "permissions"        
+                    }
+                },
+                {
+            
+                $project:{
+                    'permissions._id':0,
+                    'permissions.role_id':0,
+                    '__v':0,
+                    'permissions.__v':0,
+                    
+                }
+                }
+            
+            ]);
+
+            let FindPermission = allRoles.find(x=>x._id==FindRole?._id)
+            if(FindPermission.permissions[0].permissions[collection][permission]){
+                return response.status(200).json({message:'Authorization successful',permission:true})
+            }else{
+                return response.status(500).json({message:'Authorization failed',permission: false});
+            }
+        }else{
+            return response.status(501).json({message:'Authorization failed',permission: false})
+        }
+    }else{
+        return response.status(501).json({message:'Authorization failed',permission: false})
+    }
+    }
 })
 export default router;

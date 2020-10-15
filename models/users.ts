@@ -16,7 +16,7 @@ interface IUser extends Document{
     college_id:  string,
     status: Number,
     email_verified:  Number,
-    role:   string,
+    // role:   string,
     created_at: Date ,
     updated_at?: Date 
     isValid(password:String):Boolean,
@@ -41,7 +41,7 @@ let userSchema =   new mongoose.Schema({
     college_id: { type: String, required: true },
     status: { type: Number, default: 1 },
     email_verified: { type: Number, default: 0 },
-    role: { type: String, enum: ['Admin', 'Organiser', 'Student'], default: 'Student' },
+    // role: { type: String, enum: ['Admin', 'Organiser', 'Student'], default: 'Student' },
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date },
     samyak_id:{type:String}
