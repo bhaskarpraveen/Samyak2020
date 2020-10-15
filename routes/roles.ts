@@ -241,47 +241,57 @@ router.get('/all-UserRoles',async function(request:express.Request,response:expr
 
 
 router.post('/check-permission',VerifyToken,async function(request:jwt_request,response:express.Response){
-    if(request.tokenData){
-        const {userId} = request.tokenData;
-        const {collection,permission} = request.body;
-    const user = await User.findOne({_id:userId})
-    if(user){
-        let FindRole = await UserRole.findOne({user_id:user._id});
-        if(FindRole){
-            let allRoles= await Role.aggregate([
-                {
-                    $lookup:{
-                        from: 'permissions',
-                        localField: "_id",
-                        foreignField: "role_id",
-                        as: "permissions"        
-                    }
-                },
-                {
+    try{
+        if(request.tokenData){
+            const {userId} = request.tokenData;
+            const {collection,permission} = request.body;
+        const user = await User.findOne({_id:userId})
+        if(user){
+            let FindRole = await UserRole.findOne({user_id:user._id});
             
-                $project:{
-                    'permissions._id':0,
-                    'permissions.role_id':0,
-                    '__v':0,
-                    'permissions.__v':0,
-                    
-                }
-                }
-            
-            ]);
+            if(FindRole){
+                let allRoles= await Role.aggregate([
+                    {
+                        $match:{_id:FindRole.role_id}
+                    },
 
-            let FindPermission = allRoles.find(x=>x._id==FindRole?._id)
-            if(FindPermission.permissions[0].permissions[collection][permission]){
-                return response.status(200).json(true)
+
+                    {
+                        $lookup:{
+                            from: 'permissions',
+                            localField: "_id",
+                            foreignField: "role_id",
+                            as: "permissions"        
+                        }
+                    },
+                    {
+                
+                    $project:{
+                        'permissions._id':0,
+                        'permissions.role_id':0,
+                        '__v':0,
+                        'permissions.__v':0,
+                        
+                    }
+                    }
+                
+                ]);
+                if(allRoles[0].permissions[0].permissions[collection][permission]){
+                    return response.status(200).json(true)
+                }else{
+                    return response.status(200).json(false);
+                }
             }else{
-                return response.status(501).json(false);
+                return response.status(200).json(false)
             }
         }else{
-            return response.status(501).json(false)
+            return response.status(200).json(false)
         }
-    }else{
-        return response.status(501).json(false)
+        }
     }
+    catch{
+        return response.status(200).json(false)
     }
+  
 })
 export default router;

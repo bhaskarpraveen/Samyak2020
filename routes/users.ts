@@ -35,8 +35,9 @@ router.post('/register',async function(request:express.Request,response:express.
             });
 
             let promise = newuser.save();
-            promise.then(async (doc)=>{
             
+            promise.then(async (doc)=>{
+                console.log(doc.email)
             //email verification service
             await emailVerification(doc.email)
                 .then((res)=>{
@@ -104,8 +105,8 @@ router.get('/verify/:token',async function(request:express.Request,response:expr
         if(err){
             return response.status(501).json({message:'Invalid link'})
         }
-        if(data!=null){
-            let user = await User.findOne()
+        if(data){
+            let user = await User.findOne({_id:data.userId})
             if(user){
                 //toggle email_verified to 1
                 user.email_verified=1;
@@ -131,6 +132,7 @@ router.get('/verify/:token',async function(request:express.Request,response:expr
 //email verification 
 router.post('/email-verification',async function(request:express.Request,response:express.Response){
     let {email} = request.body;
+    console.log(email);
     //email verification service
     await emailVerification(email)
     .then(res=>{

@@ -20,6 +20,13 @@ let VerifyUserRole = (data:role_data)=>{
             if(FindRole){
                 let allRoles= await Role.aggregate([
                     {
+                       
+                        $match:{_id:FindRole.role_id}
+                       
+    
+                    },
+
+                    {
                         $lookup:{
                             from: 'permissions',
                             localField: "_id",
@@ -40,8 +47,8 @@ let VerifyUserRole = (data:role_data)=>{
                 
                 ]);
 
-                let FindPermission = allRoles.find(x=>x._id==FindRole?._id)
-                if(FindPermission.permissions[0].permissions[data.collection][data.permission]){
+              
+                if(allRoles[0].permissions[0].permissions[data.collection][data.permission]){
                     next();
                 }else{
                     return response.status(500).json({message:'Authorization failed'});
