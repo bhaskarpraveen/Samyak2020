@@ -240,7 +240,7 @@ router.get('/all-UserRoles',async function(request:express.Request,response:expr
 });
 
 
-router.get('/check-permission',async function(request:jwt_request,response:express.Response){
+router.post('/check-permission',async function(request:jwt_request,response:express.Response){
     if(request.tokenData){
         const {userId} = request.tokenData;
         const {collection,permission} = request.body;
