@@ -240,7 +240,7 @@ router.get('/all-UserRoles',async function(request:express.Request,response:expr
 });
 
 
-router.post('/check-permission',async function(request:jwt_request,response:express.Response){
+router.post('/check-permission',VerifyToken,async function(request:jwt_request,response:express.Response){
     if(request.tokenData){
         const {userId} = request.tokenData;
         const {collection,permission} = request.body;
@@ -272,15 +272,15 @@ router.post('/check-permission',async function(request:jwt_request,response:expr
 
             let FindPermission = allRoles.find(x=>x._id==FindRole?._id)
             if(FindPermission.permissions[0].permissions[collection][permission]){
-                return response.status(200).json({message:'Authorization successful',permission:true})
+                return response.status(200).json(true)
             }else{
-                return response.status(500).json({message:'Authorization failed',permission: false});
+                return response.status(501).json(false);
             }
         }else{
-            return response.status(501).json({message:'Authorization failed',permission: false})
+            return response.status(501).json(false)
         }
     }else{
-        return response.status(501).json({message:'Authorization failed',permission: false})
+        return response.status(501).json(false)
     }
     }
 })
