@@ -6,6 +6,7 @@ import  jwt from 'jsonwebtoken';
 import Role from '../models/roles';
 import Permission from '../models/permissions';
 import UserRole from '../models/user_roles';
+import VerifyUserRole from '../middlewares/verify_user_role'
 const router:express.Router = express.Router();
 const JWT_KEY =  process.env.JWT_KEY ||'jsonwebtoken'
 
@@ -234,7 +235,7 @@ router.post('/delete-UserRole',async function(request:express.Request,response:e
     }
 });
 
-router.get('/all-UserRoles',async function(request:express.Request,response:express.Response){
+router.get('/all-UserRoles',VerifyToken,async function(request:express.Request,response:express.Response){
     let user_roles = await UserRole.find({});
     return response.status(200).json({user_roles:user_roles});
 });

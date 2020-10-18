@@ -46,8 +46,6 @@ let VerifyUserRole = (data:role_data)=>{
                     }
                 
                 ]);
-
-              
                 if(allRoles[0].permissions[0].permissions[data.collection][data.permission]){
                     next();
                 }else{

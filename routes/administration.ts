@@ -1,10 +1,8 @@
-import express, { request } from 'express';
+import express from 'express';
 import User from '../models/users';
-import VerifyAdministration from '../middlewares/verify_administration';
 import VerifyToken from '../middlewares/verify_token';
 import  jwt from 'jsonwebtoken';
-import Role from '../models/roles';
-import Permission from '../models/permissions';
+import VerifyUserRole from '../middlewares/verify_user_role'
 import UserRole from '../models/user_roles';
 const router:express.Router = express.Router();
 const JWT_KEY =  process.env.JWT_KEY ||'jsonwebtoken'
@@ -55,14 +53,14 @@ router.post('/login',async function(request:express.Request,response:express.Res
 })
 
 //returns all users
-router.get('/all-users',VerifyToken,VerifyAdministration,async function(request:jwt_request,response:express.Response){
+router.get('/all-users',VerifyToken,VerifyUserRole({collection:"Users",permission:"view"}),async function(request:jwt_request,response:express.Response){
     const users = await User.find({},'_id samyak_id name email mobile college current_year branch gender college_id status role email_verified created_at updated_at');
     return response.status(200).json(users);
 
 })
 
 //delete a user
-router.post('/delete-user',VerifyToken,VerifyAdministration,async function(request:jwt_request,response:express.Response){
+router.post('/delete-user',VerifyToken,VerifyUserRole({collection:"Users",permission:"delete"}),async function(request:jwt_request,response:express.Response){
     const {userId} = request.body;
     if(userId){
         let user = await User.findOne({_id:userId});
@@ -86,7 +84,7 @@ router.post('/delete-user',VerifyToken,VerifyAdministration,async function(reque
 
 
 //edit user details
-router.post('/edit-user',VerifyToken,VerifyAdministration,async function(request:jwt_request,response:express.Response){
+router.post('/edit-user',VerifyToken,VerifyUserRole({collection:"Users",permission:"edit"}),async function(request:jwt_request,response:express.Response){
     let {name,email,mobile,college,current_year,branch,gender,college_id} = request.body;
     if(name&&email&&mobile&&college&&current_year&&branch&&gender&&college_id){
 
@@ -113,7 +111,7 @@ router.post('/edit-user',VerifyToken,VerifyAdministration,async function(request
     }
 })
 
-router.post('/account-status',VerifyToken,VerifyAdministration,async function(request:jwt_request,response:express.Response){
+router.post('/account-status',VerifyToken,VerifyUserRole({collection:"Users",permission:"edit"}),async function(request:jwt_request,response:express.Response){
     const {userId} = request.body;
     if(userId){
         const user = await User.findOne({_id:userId});
