@@ -6,6 +6,7 @@ import UsersRouter from './routes/users';
 import AdminRouter from './routes/administration';
 import RoleRouter from './routes/roles';
 import EventRouter from './routes/events'
+import fileUpload from 'express-fileupload';
 const app:express.Application = express();
 dotenv.config();
 const PORT = process.env.PORT || 5000;
@@ -23,6 +24,9 @@ connection.once('open',()=>{
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(cors())
+app.use(fileUpload({
+    limits:{filesize:50*1024*1024}
+}))
 
 // Routes
 app.use('/users',UsersRouter);

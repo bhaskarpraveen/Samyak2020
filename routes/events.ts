@@ -3,7 +3,9 @@ import Event from '../models/events';
 import EventType from '../models/event_types';
 import VerifyUserRole from '../middlewares/verify_user_role'
 import VerifyToken from '../middlewares/verify_token';
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
+import fs from 'fs';
+import csvtojson from 'csvtojson';
 const router:express.Router = express.Router();
 
 
@@ -235,5 +237,70 @@ router.post('/edit-event',VerifyToken,VerifyUserRole({collection:'Events',permis
     }
 
 
+})
+
+router.post('/add-csvEvents',async function(request:express.Request,response:express.Response){
+    if(request.files){
+        const {newfile} = request.files;
+
+        fs.writeFileSync(__dirname+'/events.csv',newfile.data);
+        let data = await csvtojson().fromFile(__dirname+'/events.csv')
+        response.send(data)
+        data.forEach(async event=>{
+            let findEvent = await Event.findOne({code:event.code});
+            if(!findEvent){
+                let findType = await EventType.findOne({name:event.type})
+                if(findType){
+                    let newevent = new Event({
+                        name:event.name,
+                        department:event.department,
+                        organiser:event.organiser,
+                        description:event.description,
+                        multiple_events_allowed:event.multiple_events_allowed,
+                        time:event.time,
+                        attending_link:event.attending_link,
+                        venue:event.venue,
+                        registration_price:event.registration_price,
+                        type:findType._id,
+                        code:event.code
+                    })
+
+                await newevent.save();
+                }      
+            }
+            })
+            fs.unlinkSync(__dirname+'/events.csv');
+            return response.status(200).json({message:'successfull'})
+ 
+    }
+  
+})
+
+router.post('/edit-csvEvents',async function(request:express.Request,response:express.Response){
+    if(request.files){
+        const {newfile} = request.files;
+
+        fs.writeFileSync(__dirname+'/events.csv',newfile.data);
+        let data = await csvtojson().fromFile(__dirname+'/events.csv')
+        response.send(data)
+        data.forEach(async event=>{
+           let newevent =  await Event.updateOne({code:event.code},{$set:{
+                name:event.name,
+                    department:event.department,
+                    organiser:event.organiser,
+                    description:event.description,
+                    multiple_events_allowed:event.multiple_events_allowed,
+                    time:event.time,
+                    attending_link:event.attending_link,
+                    venue:event.venue,
+                    registration_price:event.registration_price,
+                    type:event.type,
+                    code:event.code
+            }},{ upsert: false })
+        })
+        fs.unlinkSync(__dirname+'/events.csv');
+        return response.status(200).json({message:'successfull'})
+    }
+  
 })
 export default router;
