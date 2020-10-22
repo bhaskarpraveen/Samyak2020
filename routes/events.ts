@@ -245,7 +245,6 @@ router.post('/add-csvEvents',async function(request:express.Request,response:exp
 
         fs.writeFileSync(__dirname+'/events.csv',newfile.data);
         let data = await csvtojson().fromFile(__dirname+'/events.csv')
-        response.send(data)
         data.forEach(async event=>{
             let findEvent = await Event.findOne({code:event.code});
             if(!findEvent){
@@ -272,6 +271,8 @@ router.post('/add-csvEvents',async function(request:express.Request,response:exp
             fs.unlinkSync(__dirname+'/events.csv');
             return response.status(200).json({message:'successfull'})
  
+    }else{
+        return response.status(501).json({message:'Not added'})
     }
   
 })

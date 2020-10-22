@@ -17,7 +17,7 @@ interface emailData{
 let SendMail = async function(data:emailData){
 
     let transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
+        host: process.env.MAIL_HOST,
         port: 465,
         secure: true,
         auth: {
@@ -34,7 +34,7 @@ try{
     let htmlToSend = template(data.replacements);
     
     let mailOptions = {
-        from: data.from,
+        from: 'info@klsamyak.in',
         to:data.to, 
         subject: data.subject,
         html: htmlToSend
