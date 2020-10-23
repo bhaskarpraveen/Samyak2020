@@ -21,7 +21,7 @@ let SendMail = async function(data:emailData){
         port: 465,
         secure: true,
         auth: {
-            user: 'praveennaidu264@gmail.com',
+            user: 'notification@klsamyak.in',
             pass: process.env.PASS
         }
     });
@@ -34,7 +34,7 @@ try{
     let htmlToSend = template(data.replacements);
     
     let mailOptions = {
-        from: 'info@klsamyak.in',
+        from: 'notification@klsamyak.in',
         to:data.to, 
         subject: data.subject,
         html: htmlToSend
