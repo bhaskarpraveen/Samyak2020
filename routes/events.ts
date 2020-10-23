@@ -6,6 +6,7 @@ import VerifyToken from '../middlewares/verify_token';
 import mongoose from 'mongoose';
 import fs from 'fs';
 import csvtojson from 'csvtojson';
+import formatDate from '../services/date_format';
 const router:express.Router = express.Router();
 
 
@@ -93,12 +94,23 @@ router.post('/add-event',VerifyToken,VerifyUserRole({collection:"Events",permiss
     organiser,
     description,
     multiple_events_allowed,
-    time,
     attending_link,
     venue,
     registration_price,
     type,
-    code
+    code,
+    day1_event,
+    day1_date,
+    day1_start_time,
+    day1_end_time,
+    day2_event,
+    day2_date,
+    day2_start_time,
+    day2_end_time,
+    day3_event,
+    day3_date,
+    day3_start_time,
+    day3_end_time,
     } = request.body;
 
     if(name&&department&&description&&multiple_events_allowed&&attending_link&&type&&code){
@@ -107,13 +119,34 @@ router.post('/add-event',VerifyToken,VerifyUserRole({collection:"Events",permiss
             if(mongoose.Types.ObjectId.isValid(type)){
                 let FindEventType = await EventType.findOne({_id:type});
             if(FindEventType){
+               
+                let new_time ={
+                    day1:{
+                        event:day1_event,
+                        date:day1_date,
+                        start_time :formatDate(day1_date,day1_start_time),
+                        end_time:formatDate(day1_date,day1_end_time)
+                    },
+                    day2:{
+                        event:day2_event,
+                        date:day2_date,
+                        start_time : formatDate(day2_date,day2_start_time),
+                        end_time:formatDate(day2_date,day2_end_time)
+                    },
+                    day3:{
+                        event:day3_event,
+                        date:day3_date,
+                        start_time : formatDate(day3_date,day3_start_time),
+                        end_time:formatDate(day3_date,day3_end_time)
+                    },
+                }
                 let event = new Event({
                     name:name,
                     department:department,
                     organiser:organiser,
                     description:description,
                     multiple_events_allowed:multiple_events_allowed,
-                    time:time,
+                    time:new_time,
                     attending_link:attending_link,
                     venue:venue,
                     registration_price:registration_price,
