@@ -193,7 +193,6 @@ router.get('/all-events',async function(request:express.Request,response:express
         {
     
         $project:{
-            'type._id':0,
             '__v':0,
             'type.__v':0,
             
