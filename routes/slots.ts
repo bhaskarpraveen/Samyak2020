@@ -15,7 +15,7 @@ router.post('/add',async function(request:express.Request,response:express.Respo
     const {name,meet_link,event,date,start_time,end_time} = request.body;
     if(name&&meet_link&&event&&date&&start_time&&end_time){
         let findSlot = await EventSlot.findOne({name:name});
-        if(findSlot){
+        if(!findSlot){
             let findEvent = await Event.findOne({code:event});
             if(findEvent){
                 let new_slot = new EventSlot({
@@ -62,7 +62,7 @@ router.post('/delete',async function(request:express.Request,response:express.Re
     const {slotId} = request.body;
     if(slotId){
         let FindSlot = await EventSlot.findOne({_id:slotId});
-        if(!FindSlot){
+        if(FindSlot){
             let promise = EventSlot.deleteOne({_id:slotId});
             promise.then(()=>{
                 return response.status(200).json({message:'Successfully deleted'})
