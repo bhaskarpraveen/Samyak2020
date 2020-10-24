@@ -7,8 +7,6 @@ interface IEvent extends Document{
     organiser:String,
     description:String,
     multiple_events_allowed:Boolean,
-    time?:Object,
-    attending_link?:String,
     status:Number,
     created_at:Date
     updated_at?:Date,
@@ -23,28 +21,6 @@ let EventSchema = new Schema({
     organiser:{type:String,required:true},
     description:{type:String,required:true},
     multiple_events_allowed:{type:Number,default:1},
-    time:{
-        day1:{
-            event:{type:Number,default:0},
-            date:{type:Date},
-            start_time : {type:String},
-            end_time:{type:String}
-        },
-        day2:{
-            event:{type:Number,default:0},
-            date:{type:Date},
-            start_time : {type:String},
-            end_time:{type:String}
-        },
-        day3:{
-            event:{type:Number,default:0},
-            date:{type:Date},
-            start_time : {type:String},
-            end_time:{type:String}
-        },
-
-    },
-    attending_link:{type:String},
     status:{type:Number,default:1},
     created_at:{type:Date,default:Date.now},
     updated_at:{type:Date},
@@ -55,3 +31,4 @@ let EventSchema = new Schema({
 })
 
 export default  model<IEvent>('Events',EventSchema)
+

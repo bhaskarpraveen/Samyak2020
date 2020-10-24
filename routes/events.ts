@@ -94,60 +94,26 @@ router.post('/add-event',VerifyToken,VerifyUserRole({collection:"Events",permiss
     organiser,
     description,
     multiple_events_allowed,
-    attending_link,
     venue,
     registration_price,
     type,
     code,
-    day1_event,
-    day1_date,
-    day1_start_time,
-    day1_end_time,
-    day2_event,
-    day2_date,
-    day2_start_time,
-    day2_end_time,
-    day3_event,
-    day3_date,
-    day3_start_time,
-    day3_end_time,
     } = request.body;
 
-    if(name&&department&&description&&multiple_events_allowed&&attending_link&&type&&code){
+    if(name&&department&&description&&multiple_events_allowed&&type&&code){
         let FindEvent = await Event.findOne({$or:[{name:name},{code:code}]});
         if(!FindEvent){
             if(mongoose.Types.ObjectId.isValid(type)){
                 let FindEventType = await EventType.findOne({_id:type});
             if(FindEventType){
                
-                let new_time ={
-                    day1:{
-                        event:day1_event,
-                        date:day1_date,
-                        start_time :formatDate(day1_date,day1_start_time),
-                        end_time:formatDate(day1_date,day1_end_time)
-                    },
-                    day2:{
-                        event:day2_event,
-                        date:day2_date,
-                        start_time : formatDate(day2_date,day2_start_time),
-                        end_time:formatDate(day2_date,day2_end_time)
-                    },
-                    day3:{
-                        event:day3_event,
-                        date:day3_date,
-                        start_time : formatDate(day3_date,day3_start_time),
-                        end_time:formatDate(day3_date,day3_end_time)
-                    },
-                }
+            
                 let event = new Event({
                     name:name,
                     department:department,
                     organiser:organiser,
                     description:description,
                     multiple_events_allowed:multiple_events_allowed,
-                    time:new_time,
-                    attending_link:attending_link,
                     venue:venue,
                     registration_price:registration_price,
                     type:type,
@@ -232,58 +198,23 @@ router.post('/edit-event',VerifyToken,VerifyUserRole({collection:'Events',permis
         organiser,
         description,
         multiple_events_allowed,
-        attending_link,
         venue,
         registration_price,
         type,
         code,
-        day1_event,
-        day1_date,
-        day1_start_time,
-        day1_end_time,
-        day2_event,
-        day2_date,
-        day2_start_time,
-        day2_end_time,
-        day3_event,
-        day3_date,
-        day3_start_time,
-        day3_end_time,
         } = request.body;
 
-        if(eventId&&name&&department&&description&&multiple_events_allowed&&attending_link&&type&&code){
+        if(eventId&&name&&department&&description&&multiple_events_allowed&&type&&code){
             let FindEvent = await Event.findOne({_id:eventId});
             if(FindEvent){
                 let FindEventType = await EventType.findOne({_id:type});
                 if(FindEventType){
-                    let new_time ={
-                        day1:{
-                            event:day1_event,
-                            date:day1_date,
-                            start_time :formatDate(day1_date,day1_start_time),
-                            end_time:formatDate(day1_date,day1_end_time)
-                        },
-                        day2:{
-                            event:day2_event,
-                            date:day2_date,
-                            start_time : formatDate(day2_date,day2_start_time),
-                            end_time:formatDate(day2_date,day2_end_time)
-                        },
-                        day3:{
-                            event:day3_event,
-                            date:day3_date,
-                            start_time : formatDate(day3_date,day3_start_time),
-                            end_time:formatDate(day3_date,day3_end_time)
-                        },
-                    }
                 let promise = Event.updateOne({_id:eventId},{$set:{
                     name:name,
                     department:department,
                     organiser:organiser,
                     description:description,
                     multiple_events_allowed:multiple_events_allowed,
-                    time:new_time,
-                    attending_link:attending_link,
                     venue:venue,
                     registration_price:registration_price,
                     type:type,
@@ -319,34 +250,12 @@ router.post('/add-csvEvents',async function(request:express.Request,response:exp
             if(!findEvent){
                 let findType = await EventType.findOne({name:event.type})
                 if(findType){
-                    let new_time ={
-                        day1:{
-                            event:event.day1_event,
-                            date:event.day1_date,
-                            start_time :formatDate(event.day1_date,event.day1_start_time),
-                            end_time:formatDate(event.day1_date,event.day1_end_time)
-                        },
-                        day2:{
-                            event:event.day2_event,
-                            date:event.day2_date,
-                            start_time : formatDate(event.day2_date,event.day2_start_time),
-                            end_time:formatDate(event.day2_date,event.day2_end_time)
-                        },
-                        day3:{
-                            event:event.day3_event,
-                            date:event.day3_date,
-                            start_time : formatDate(event.day3_date,event.day3_start_time),
-                            end_time:formatDate(event.day3_date,event.day3_end_time)
-                        },
-                    }
                     let newevent = new Event({
                         name:event.name,
                         department:event.department,
                         organiser:event.organiser,
                         description:event.description,
                         multiple_events_allowed:event.multiple_events_allowed,
-                        time:new_time,
-                        attending_link:event.attending_link,
                         venue:event.venue,
                         registration_price:event.registration_price,
                         type:findType._id,
@@ -374,34 +283,12 @@ router.post('/edit-csvEvents',async function(request:express.Request,response:ex
         let data = await csvtojson().fromFile(__dirname+'/events.csv')
         response.send(data)
         data.forEach(async event=>{
-            let new_time ={
-                day1:{
-                    event:event.day1_event,
-                    date:event.day1_date,
-                    start_time :formatDate(event.day1_date,event.day1_start_time),
-                    end_time:formatDate(event.day1_date,event.day1_end_time)
-                },
-                day2:{
-                    event:event.day2_event,
-                    date:event.day2_date,
-                    start_time : formatDate(event.day2_date,event.day2_start_time),
-                    end_time:formatDate(event.day2_date,event.day2_end_time)
-                },
-                day3:{
-                    event:event.day3_event,
-                    date:event.day3_date,
-                    start_time : formatDate(event.day3_date,event.day3_start_time),
-                    end_time:formatDate(event.day3_date,event.day3_end_time)
-                },
-            }
            let newevent =  await Event.updateOne({code:event.code},{$set:{
                 name:event.name,
                     department:event.department,
                     organiser:event.organiser,
                     description:event.description,
                     multiple_events_allowed:event.multiple_events_allowed,
-                    time:new_time,
-                    attending_link:event.attending_link,
                     venue:event.venue,
                     registration_price:event.registration_price,
                     type:event.type,
