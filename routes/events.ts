@@ -6,7 +6,7 @@ import VerifyToken from '../middlewares/verify_token';
 import mongoose from 'mongoose';
 import fs from 'fs';
 import csvtojson from 'csvtojson';
-import formatDate from '../services/date_formate';
+import EventSlot from '../models/event_slots';
 const router:express.Router = express.Router();
 
 
@@ -51,13 +51,19 @@ router.post('delete-eventType',async function(request:express.Request,response:e
     if(typeId){
         let FindEvent = await EventType.findOne({_id:typeId});
         if(FindEvent){
-            let promise = Event.deleteOne({_id:typeId});
-            promise.then(()=>{
-                return response.status(200).json({message:'Successfully deleted'})
-            })
-            promise.catch(err=>{
-                return response.status(501).json({message:err.message})
-            })
+            let find = await Event.findOne({type:typeId});
+            if(!find){
+                let promise = EventType.deleteOne({_id:typeId});
+                promise.then(()=>{
+                    return response.status(200).json({message:'Successfully deleted'})
+                })
+                promise.catch(err=>{
+                    return response.status(501).json({message:err.message})
+                })
+            }else{
+                return response.status(501).json({message:'Event with type exists'})
+            }
+ 
         }else{
             return response.status(501).json({message:'Event not found'})
         }
@@ -174,8 +180,10 @@ router.post('/delete-event',VerifyToken,VerifyUserRole({collection:'Events',perm
     if(eventId){
         let FindEvent = await Event.findOne({_id:eventId});
         if(FindEvent){
+        let code = FindEvent.code
             let promise = Event.deleteOne({_id:eventId});
-            promise.then(()=>{
+            promise.then(async()=>{
+                await EventSlot.deleteMany({event:code});
                 return response.status(200).json({message:'Successfully deleted'})
             })
             promise.catch(err=>{

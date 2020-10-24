@@ -62,7 +62,7 @@ router.post('/delete',async function(request:express.Request,response:express.Re
     const {slotId} = request.body;
     if(slotId){
         let FindSlot = await EventSlot.findOne({_id:slotId});
-        if(FindSlot){
+        if(!FindSlot){
             let promise = EventSlot.deleteOne({_id:slotId});
             promise.then(()=>{
                 return response.status(200).json({message:'Successfully deleted'})
