@@ -48,7 +48,7 @@ router.post('/add',async function(request:express.Request,response:express.Respo
     }
 })
 
-router.get('/all-slots',async function(request:express.Request,response:express.Response){
+router.post('/all-slots',async function(request:express.Request,response:express.Response){
     const {eventCode} = request.body;
     if(eventCode){
         let slots = await EventSlot.find({event:eventCode});
