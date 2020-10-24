@@ -15,7 +15,7 @@ interface emailVerificationData{
 //email verification service
 let emailVerification = async function(email:string){
     let user = await User.findOne({email:email})
-    console.log(user)
+
     if(user){
         //generate token
         let token = jwt.sign({userId:user._id},JWT_KEY,{expiresIn:'3h'});
