@@ -73,7 +73,7 @@ router.post('delete-eventType',async function(request:express.Request,response:e
 });
 
 //edit an event
-router.post('/edit-event',async function(request:express.Request,response:express.Response){
+router.post('/edit-eventType',async function(request:express.Request,response:express.Response){
     const {typeId,name} = request.body;
     if(typeId&&name){
         let FindEvent = await EventType.findOne({_id:typeId});
