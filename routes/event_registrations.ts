@@ -61,6 +61,14 @@ router.get('/event-registrations',async function(request:express.Request,respons
                     as: "user"        
                 }
             },
+            // {
+            //     $lookup:{
+            //         from: 'event_slots',
+            //         localField: "user_id",
+            //         foreignField: "user_id",
+            //         as: "slot"        
+            //     }
+            // },
             {
         
             $project:{
@@ -74,6 +82,10 @@ router.get('/event-registrations',async function(request:express.Request,respons
         
         ]);
         let record = registrations.filter(reg=>reg.event_id==eventId);
+       for(let i=0;i<record.length;i++){
+           let slot = await EventSlot.findOne({user_id:record[i].user_id});
+           record[i].slot_name=(slot?.name)?slot.name:'None';
+       }
         return response.status(200).json({registrations:record});
     }else{
         return response.status(501).json({message:'Enter event id'});
