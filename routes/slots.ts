@@ -7,16 +7,16 @@ const router:express.Router = express.Router();
 
 
 router.post('/add',async function(request:express.Request,response:express.Response){
-    const {name,meet_link,event,date,start_time,end_time} = request.body;
-    if(name&&meet_link&&event&&date&&start_time&&end_time){
+    const {name,meet_link,eventId,date,start_time,end_time} = request.body;
+    if(name&&meet_link&&eventId&&date&&start_time&&end_time){
         let findSlot = await EventSlot.findOne({name:name});
         if(!findSlot){
-            let findEvent = await Event.findOne({_id:event});
+            let findEvent = await Event.findOne({_id:eventId});
             if(findEvent){
                 let new_slot = new EventSlot({
                     name:name,
                     meet_link:meet_link,
-                    event:event,
+                    event_id:eventId,
                     date:date,
                     start_time:start_time,
                     end_time:end_time
@@ -46,7 +46,7 @@ router.post('/add',async function(request:express.Request,response:express.Respo
 router.post('/all-slots',async function(request:express.Request,response:express.Response){
     const {eventId} = request.body;
     if(eventId){
-        let slots = await EventSlot.find({event:eventId});
+        let slots = await EventSlot.find({event_id:eventId});
         return response.status(200).json({slots:slots})
     }else{
         return response.status(501).json({message:'Enter event code'})

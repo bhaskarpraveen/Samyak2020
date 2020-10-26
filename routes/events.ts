@@ -180,7 +180,7 @@ router.post('/delete-event',VerifyToken,VerifyUserRole({collection:'Events',perm
     if(eventId){
         let FindEvent = await Event.findOne({_id:eventId});
         if(FindEvent){
-        let code = FindEvent.code
+        let code = FindEvent._id
             let promise = Event.deleteOne({_id:eventId});
             promise.then(async()=>{
                 await EventSlot.deleteMany({event:code});
