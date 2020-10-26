@@ -84,7 +84,7 @@ router.get('/event-registrations',async function(request:express.Request,respons
         let record = registrations.filter(reg=>reg.event_id==eventId);
        for(let i=0;i<record.length;i++){
            let slot = await EventSlot.findOne({user_id:record[i].user_id});
-           record[i].slot_name=(slot?.name)?slot.name:'None';
+           record[i].user[0].slot_name=(slot?.name)?slot.name:'None';
        }
         return response.status(200).json({registrations:record});
     }else{
