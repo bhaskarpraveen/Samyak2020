@@ -1,13 +1,8 @@
 import express from 'express';
 import Event from '../models/events';
-import EventType from '../models/event_types';
-import VerifyUserRole from '../middlewares/verify_user_role'
-import VerifyToken from '../middlewares/verify_token';
-import mongoose from 'mongoose';
-import fs from 'fs';
 import EventSlot from '../models/event_slots';
-import csvtojson from 'csvtojson';
-import formatDate from '../services/date_formate';
+import User from '../models/users';
+import UserEventBatch from '../models/user_event_batch';
 const router:express.Router = express.Router();
 
 
@@ -16,7 +11,7 @@ router.post('/add',async function(request:express.Request,response:express.Respo
     if(name&&meet_link&&event&&date&&start_time&&end_time){
         let findSlot = await EventSlot.findOne({name:name});
         if(!findSlot){
-            let findEvent = await Event.findOne({code:event});
+            let findEvent = await Event.findOne({_id:event});
             if(findEvent){
                 let new_slot = new EventSlot({
                     name:name,
@@ -49,9 +44,9 @@ router.post('/add',async function(request:express.Request,response:express.Respo
 })
 
 router.post('/all-slots',async function(request:express.Request,response:express.Response){
-    const {eventCode} = request.body;
-    if(eventCode){
-        let slots = await EventSlot.find({event:eventCode});
+    const {eventId} = request.body;
+    if(eventId){
+        let slots = await EventSlot.find({event:eventId});
         return response.status(200).json({slots:slots})
     }else{
         return response.status(501).json({message:'Enter event code'})
@@ -76,5 +71,48 @@ router.post('/delete',async function(request:express.Request,response:express.Re
     }else{
         return response.status(501).json({message:'Enter valid slot id'})
     }
-})
+});
+
+
+
+router.post('/assign-batch',async function(request:express.Request,response:express.Response){
+        const {userId,eventId,batchId} = request.body;
+        if(userId&&eventId&&batchId){
+            let user = await User.findOne({_id:userId});
+            if(user){
+                let event = await Event.findOne({_id:eventId});
+                if(event){
+                    let batch = await EventSlot.findOne({_id:batchId});
+                    if(batch){
+                        let findRecord = await UserEventBatch.findOne({user_id:userId,event_id:eventId,batch_id:batchId});
+                        if(!findRecord){
+                            let new_record = new UserEventBatch({
+                                user_id:userId,
+                                event_id:eventId,
+                                batch_id:batchId
+                            });
+                            let promise = new_record.save();
+                            promise.then((doc)=>{
+                                return response.status(200).json({message:'Successfully added',doc:doc})
+                            })
+                            promise.catch(err=>{
+                                return response.status(501).json({message:err.message})
+                            })
+                        }else{
+                            return response.status(501).json({message:'record already exists'})
+                        }
+                    }else{
+                        return response.status(501).json({message:'batch not found'})
+
+                    }
+                }else{
+                    return response.status(501).json({message:'event not found'})
+                }
+            }else{
+                return response.status(501).json({message:'user not found'})
+            }
+        }else{
+            return response.status(501).json({message:'Enter valid details'})
+        }
+});
 export default router;

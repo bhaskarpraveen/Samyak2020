@@ -1,6 +1,5 @@
 import express from 'express';
 import User from '../models/users';
-import VerifyAdministration from '../middlewares/verify_administration';
 import VerifyToken from '../middlewares/verify_token';
 import  jwt from 'jsonwebtoken';
 import Role from '../models/roles';
