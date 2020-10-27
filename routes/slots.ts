@@ -91,10 +91,10 @@ router.post('/assign-batch',async function(request:express.Request,response:expr
                     let batch = await EventSlot.findOne({_id:batchId});
                     if(batch){
                         users.forEach(async (user:any) => {
-                            let findRecord = await UserEventBatch.findOne({user_id:user,event_id:eventId,batch_id:batchId});
+                            let findRecord = await UserEventBatch.findOne({user_id:user._id,event_id:eventId,batch_id:batchId});
                             if(!findRecord){
                                 let new_record = new UserEventBatch({
-                                    user_id:user,
+                                    user_id:user._id,
                                     event_id:eventId,
                                     batch_id:batchId
                                 });
