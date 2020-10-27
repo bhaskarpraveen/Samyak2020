@@ -8,6 +8,7 @@ import VerifyToken from '../middlewares/verify_token';
 import mongoose from 'mongoose';
 import fs from 'fs';
 import EventSlot from '../models/event_slots';
+import UserEventBatch from '../models/user_event_batch';
 import csvtojson from 'csvtojson';
 import formatDate from '../services/date_formate';
 const router:express.Router = express.Router();
@@ -82,9 +83,11 @@ router.get('/event-registrations',async function(request:express.Request,respons
         
         ]);
         let record = registrations.filter(reg=>reg.event_id==eventId);
+        
        for(let i=0;i<record.length;i++){
-           let slot = await EventSlot.findOne({user_id:record[i].user_id});
-           record[i].user[0].slot_name=(slot?.name)?slot.name:'None';
+           let slot = await UserEventBatch.findOne({user_id:record[i].user_id,event_id:record[i].event_id});
+           let batch = await EventSlot.findOne({_id:slot?.batch_id});
+           record[i].user[0].slot_name=batch?.name||"None";
        }
         return response.status(200).json({registrations:record});
     }else{
