@@ -119,7 +119,7 @@ router.post('/manage-permissions',VerifyToken,async function(request:express.Req
         if(findRole){
             let new_permission = await Permission.findOne({role_id:findRole._id})
             if(new_permission){
-                if(permission.Users&&permission.Events){
+                if(permission.Users&&permission.Events&&permission.Roles&&permission.User_Roles){
                     let obj = {
                         Users:{
                             add:permission.Users.add,
@@ -132,6 +132,18 @@ router.post('/manage-permissions',VerifyToken,async function(request:express.Req
                             view:permission.Events.view,
                             edit:permission.Events.edit,
                             delete:permission.Events.delete
+                        },
+                        Roles:{
+                            add:permission.Roles.add,
+                            view:permission.Roles.view,
+                            edit:permission.Roles.edit,
+                            delete:permission.Roles.delete
+                        },
+                        User_Roles:{
+                            add:permission.User_Roles.add,
+                            view:permission.User_Roles.view,
+                            edit:permission.User_Roles.edit,
+                            delete:permission.User_Roles.delete
                         }
                     }
                     new_permission.permissions=obj;
