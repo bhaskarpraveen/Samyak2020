@@ -245,7 +245,7 @@ router.post('/delete-UserRole',VerifyToken,async function(request:express.Reques
     }
 });
 
-router.get('/all-UserRoles',VerifyToken,VerifyUserRole({collection:'User_roles',permission:'view'}),VerifyToken,async function(request:express.Request,response:express.Response){
+router.get('/all-UserRoles',VerifyToken,VerifyToken,async function(request:express.Request,response:express.Response){
     let user_roles = await UserRole.find({});
     return response.status(200).json({user_roles:user_roles});
 });
