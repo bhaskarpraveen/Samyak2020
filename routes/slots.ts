@@ -76,31 +76,33 @@ router.post('/delete',async function(request:express.Request,response:express.Re
 
 
 router.post('/assign-batch',async function(request:express.Request,response:express.Response){
-        const {userId,eventId,batchId} = request.body;
-        if(userId&&eventId&&batchId){
-            let user = await User.findOne({_id:userId});
-            if(user){
+        const {eventId,batchId} = request.body;
+        let {users} = request.body;
+        let check=1;
+        try{
+            users = eval(users)
+        }catch{
+            check=0;
+        }
+            
+        if(users&&check&&eventId&&batchId){
                 let event = await Event.findOne({_id:eventId});
                 if(event){
                     let batch = await EventSlot.findOne({_id:batchId});
                     if(batch){
-                        let findRecord = await UserEventBatch.findOne({user_id:userId,event_id:eventId,batch_id:batchId});
-                        if(!findRecord){
-                            let new_record = new UserEventBatch({
-                                user_id:userId,
-                                event_id:eventId,
-                                batch_id:batchId
-                            });
-                            let promise = new_record.save();
-                            promise.then((doc)=>{
-                                return response.status(200).json({message:'Successfully added',doc:doc})
-                            })
-                            promise.catch(err=>{
-                                return response.status(501).json({message:err.message})
-                            })
-                        }else{
-                            return response.status(501).json({message:'record already exists'})
+                        users.forEach(async (user:any) => {
+                            let findRecord = await UserEventBatch.findOne({user_id:user,event_id:eventId,batch_id:batchId});
+                            if(!findRecord){
+                                let new_record = new UserEventBatch({
+                                    user_id:user,
+                                    event_id:eventId,
+                                    batch_id:batchId
+                                });
+                                let promise = await new_record.save();
                         }
+                        return response.status(200).json({message:'Successfully assigned'})
+                    });
+                       
                     }else{
                         return response.status(501).json({message:'batch not found'})
 
@@ -108,11 +110,13 @@ router.post('/assign-batch',async function(request:express.Request,response:expr
                 }else{
                     return response.status(501).json({message:'event not found'})
                 }
-            }else{
-                return response.status(501).json({message:'user not found'})
             }
-        }else{
+        else{
             return response.status(501).json({message:'Enter valid details'})
         }
 });
+
+
+
+
 export default router;
