@@ -89,7 +89,7 @@ router.get('/event-registrations',async function(request:express.Request,respons
            let slot = await UserEventBatch.find({user_id:record[i].user_id,event_id:record[i].event_id});
            for(let j=0;j<slot.length;j++){
             let batch = await EventSlot.findOne({_id:slot[j].batch_id});
-            record[i].user[0].slot_name.push(batch?.name)
+            record[i].user[0].slot_name.push({name:batch?.name,id:batch?._id})
            }
            
        }
@@ -98,5 +98,6 @@ router.get('/event-registrations',async function(request:express.Request,respons
         return response.status(501).json({message:'Enter event id'});
     }
 })
+
 
 export default router;

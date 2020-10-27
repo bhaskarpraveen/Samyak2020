@@ -116,7 +116,35 @@ router.post('/assign-batch',async function(request:express.Request,response:expr
         }
 });
 
-
+router.post('/remove-user',async function(request:express.Request,response:express.Response){
+    const {userId,eventId,batchId} = request.body;
+    if(userId&&eventId&&batchId){
+        let user = await User.findOne({_id:userId});
+        if(user){
+            let event = await Event.findOne({_id:eventId});
+            if(event){
+                let batch = await EventSlot.findOne({_id:batchId});
+                if(batch){
+                    let promise =  UserEventBatch.deleteOne({user_id:userId,event_id:eventId,batch_id:batchId});
+                    promise.then(()=>{
+                        return response.status(200).json({message:'Successfully deleted'})
+                    })
+                    promise.catch(err=>{
+                        return response.status(501).json({message:err.message})
+                    })
+                }else{
+                    return response.status(501).json({mesage:'Batch not found'})
+                }
+            }else{
+                return response.status(501).json({mesage:'Event not found'})
+            }
+        }else{
+            return response.status(501).json({mesage:'user not found'})
+        }
+    }else{
+        return response.status(501).json({mesage:'Enter all details'})
+    }
+})
 
 
 export default router;
