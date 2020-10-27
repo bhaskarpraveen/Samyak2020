@@ -31,8 +31,5 @@ RoleSchema.pre('save',async function(){
     await new_permission.save()
 });
 
-RoleSchema.pre('remove',async function(){
-    console.log('called')
 
-})
 export default model<IRole>('Role',RoleSchema);

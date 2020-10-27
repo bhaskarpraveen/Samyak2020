@@ -83,11 +83,15 @@ router.get('/event-registrations',async function(request:express.Request,respons
         
         ]);
         let record = registrations.filter(reg=>reg.event_id==eventId);
-        
+       
        for(let i=0;i<record.length;i++){
-           let slot = await UserEventBatch.findOne({user_id:record[i].user_id,event_id:record[i].event_id});
-           let batch = await EventSlot.findOne({_id:slot?.batch_id});
-           record[i].user[0].slot_name=batch?.name||"None";
+        record[i].user[0].slot_name=[];
+           let slot = await UserEventBatch.find({user_id:record[i].user_id,event_id:record[i].event_id});
+           for(let j=0;j<slot.length;j++){
+            let batch = await EventSlot.findOne({_id:slot[i].batch_id});
+            record[i].user[0].slot_name.append(batch?.name)
+           }
+           
        }
         return response.status(200).json({registrations:record});
     }else{
