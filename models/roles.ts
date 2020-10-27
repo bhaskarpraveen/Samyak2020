@@ -24,6 +24,18 @@ RoleSchema.pre('save',async function(){
                 view:false,
                 edit:false,
                 delete:false
+            },
+            Roles:{
+                add:false,
+                view:false,
+                edit:false,
+                delete:false
+            },
+            User_Roles:{
+                add:false,
+                view:false,
+                edit:false,
+                delete:false
             }
         }
         });
