@@ -15,7 +15,7 @@ interface jwt_request extends express.Request{
 }
 
 
-router.post('/add-role',VerifyToken,VerifyUserRole({collection:"Roles",permission:'add'}),async function(request:express.Request,response:express.Response){
+router.post('/add-role',VerifyToken,async function(request:express.Request,response:express.Response){
     const {role} = request.body;
     if(role){
         const findRole = await Role.findOne({name:role});
@@ -40,7 +40,7 @@ router.post('/add-role',VerifyToken,VerifyUserRole({collection:"Roles",permissio
     }
 })
 
-router.get('/all-roles',VerifyToken,VerifyUserRole({collection:'Roles',permission:'add'}),async function(request:express.Request,response:express.Response){
+router.get('/all-roles',VerifyToken,async function(request:express.Request,response:express.Response){
 
     let roles = await Role.aggregate([
     {
@@ -66,7 +66,7 @@ router.get('/all-roles',VerifyToken,VerifyUserRole({collection:'Roles',permissio
     return response.status(200).json({roles:roles});
     
 })
-router.post('/edit-role',VerifyToken,VerifyUserRole({collection:'Roles',permission:'edit'}),async function(request:express.Request,response:express.Response){
+router.post('/edit-role',VerifyToken,async function(request:express.Request,response:express.Response){
     const {current_roleId,new_role} = request.body;
 
     if(current_roleId&&new_role){
@@ -88,7 +88,7 @@ router.post('/edit-role',VerifyToken,VerifyUserRole({collection:'Roles',permissi
     }
 })
 
-router.post('/delete-role',VerifyToken,VerifyUserRole({collection:'Roles',permission:'delete'}),async function(request:express.Request,response:express.Response){
+router.post('/delete-role',VerifyToken,async function(request:express.Request,response:express.Response){
     let {RoleId} = request.body;
 
     if(RoleId){
@@ -112,7 +112,7 @@ router.post('/delete-role',VerifyToken,VerifyUserRole({collection:'Roles',permis
     }
 });
 
-router.post('/manage-permissions',VerifyToken,VerifyUserRole({collection:'User_roles',permission:'edit'}),async function(request:express.Request,response:express.Response){
+router.post('/manage-permissions',VerifyToken,async function(request:express.Request,response:express.Response){
     let {roleId,permission} = request.body;
     if(roleId&&permission){
         const findRole = await Role.findOne({_id:roleId});
@@ -160,7 +160,7 @@ router.post('/manage-permissions',VerifyToken,VerifyUserRole({collection:'User_r
 })
 
 
-router.post('/add-UserRole',VerifyToken,VerifyUserRole({collection:'User_roles',permission:'add'}),async function(request:express.Request,response:express.Response){
+router.post('/add-UserRole',VerifyToken,async function(request:express.Request,response:express.Response){
     const {userId,RoleId} = request.body;
 
     if(userId&&RoleId){
@@ -210,7 +210,7 @@ router.post('/add-UserRole',VerifyToken,VerifyUserRole({collection:'User_roles',
 
 
 
-router.post('/delete-UserRole',VerifyToken,VerifyUserRole({collection:'User_roles',permission:'delete'}),async function(request:express.Request,response:express.Response){
+router.post('/delete-UserRole',VerifyToken,async function(request:express.Request,response:express.Response){
     const {userId} =  request.body;
 
     if(userId){
