@@ -131,7 +131,9 @@ router.post('/manage-permissions',VerifyToken,async function(request:express.Req
                             add:permission.Events.add,
                             view:permission.Events.view,
                             edit:permission.Events.edit,
-                            delete:permission.Events.delete
+                            delete:permission.Events.delete,
+                            manage_batches:permission.Events.manage_batches,
+                            manage_participants:permission.Events.manage_participants
                         },
                         Roles:{
                             add:permission.Roles.add,

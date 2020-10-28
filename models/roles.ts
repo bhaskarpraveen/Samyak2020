@@ -23,7 +23,9 @@ RoleSchema.pre('save',async function(){
                 add:false,
                 view:false,
                 edit:false,
-                delete:false
+                delete:false,
+                manage_batches:false,
+                manage_participants:false
             },
             Roles:{
                 add:false,

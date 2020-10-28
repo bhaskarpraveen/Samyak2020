@@ -4,16 +4,22 @@ import EventType from '../models/event_types';
 import VerifyUserRole from '../middlewares/verify_user_role'
 import VerifyToken from '../middlewares/verify_token';
 import mongoose from 'mongoose';
+import User from '../models/users';
+import UserRole from '../models/user_roles';
+import Role from '../models/roles';
 import fs from 'fs';
 import csvtojson from 'csvtojson';
 import EventSlot from '../models/event_slots';
 const router:express.Router = express.Router();
 
 
-
+//interface 
+interface jwt_request extends express.Request{
+    tokenData?:{userId?:String}
+}
 
 //Add an event type
-router.post('/add-eventType',async function(request:express.Request,response:express.Response){
+router.post('/add-eventType',VerifyToken,VerifyUserRole({collection:'Events',permission:'add'}),async function(request:express.Request,response:express.Response){
     const {name} = request.body;
     if(name){
         let FindName = await EventType.findOne({name:name});
@@ -40,13 +46,13 @@ router.post('/add-eventType',async function(request:express.Request,response:exp
 });
 
 //get all event types
-router.get('/all-eventTypes',async function(request:express.Request,response:express.Response){
+router.get('/all-eventTypes',VerifyToken,VerifyUserRole({collection:'Events',permission:'view'}),async function(request:express.Request,response:express.Response){
     let eventTypes = await EventType.find({});
     return response.status(200).json(eventTypes)
 })
 
 //delete an event type
-router.post('delete-eventType',async function(request:express.Request,response:express.Response){
+router.post('delete-eventType',VerifyToken,VerifyUserRole({collection:'Events',permission:'delete'}),async function(request:express.Request,response:express.Response){
     const {typeId} = request.body;
     if(typeId){
         let FindEvent = await EventType.findOne({_id:typeId});
@@ -73,7 +79,7 @@ router.post('delete-eventType',async function(request:express.Request,response:e
 });
 
 //edit an event
-router.post('/edit-eventType',async function(request:express.Request,response:express.Response){
+router.post('/edit-eventType',VerifyToken,VerifyUserRole({collection:'Events',permission:'edit'}),async function(request:express.Request,response:express.Response){
     const {typeId,name} = request.body;
     if(typeId&&name){
         let FindEvent = await EventType.findOne({_id:typeId});
@@ -94,7 +100,7 @@ router.post('/edit-eventType',async function(request:express.Request,response:ex
 });
 
 //Add an event
-router.post('/add-event',VerifyToken,VerifyUserRole({collection:"Events",permission:"add"}),async function(request:express.Request,response:express.Response){
+router.post('/add-event',VerifyToken,VerifyUserRole({collection:'Events',permission:'add'}),async function(request:express.Request,response:express.Response){
     const { name,
     department,
     organiser,
@@ -117,7 +123,7 @@ router.post('/add-event',VerifyToken,VerifyUserRole({collection:"Events",permiss
                 let event = new Event({
                     name:name,
                     department:department,
-                    organiser:organiser,
+                    organiser:organiser.trim(),
                     description:description,
                     multiple_events_allowed:multiple_events_allowed,
                     venue:venue,
@@ -152,26 +158,70 @@ router.post('/add-event',VerifyToken,VerifyUserRole({collection:"Events",permiss
 
 })
 //get all events
-router.get('/all-events',async function(request:express.Request,response:express.Response){
-    let events = await Event.aggregate([
-        {
-            $lookup:{
-                from: 'eventtypes',
-                localField: "type",
-                foreignField: "_id",
-                as: "type"        
-            }
-        },
-        {
+router.get('/all-events',VerifyToken,async function(request:jwt_request,response:express.Response){
+  
+    if(request.tokenData){
+        const {userId} = request.tokenData;
+        const user = await User.findOne({_id:userId})
+        if(user){
+            let FindRole = await UserRole.findOne({user_id:user._id});
+            if(FindRole){
+                let allRoles= await Role.aggregate([
+                    {
+                       
+                        $match:{_id:FindRole.role_id}
+                       
     
-        $project:{
-            '__v':0,
-            'type.__v':0,
-            
-        }
-        }
-    ])
-    return response.status(200).json(events)
+                    },
+
+                    {
+                        $lookup:{
+                            from: 'permissions',
+                            localField: "_id",
+                            foreignField: "role_id",
+                            as: "permissions"        
+                        }
+                    },
+                    {
+                
+                    $project:{
+                        'permissions._id':0,
+                        'permissions.role_id':0,
+                        '__v':0,
+                        'permissions.__v':0,
+                        
+                    }
+                    }
+                
+                ]);
+                let events = await Event.aggregate([
+                    {
+                        $lookup:{
+                            from: 'eventtypes',
+                            localField: "type",
+                            foreignField: "_id",
+                            as: "type"        
+                        }
+                    },
+                    {
+                
+                    $project:{
+                        '__v':0,
+                        'type.__v':0,
+                        
+                    }
+                    }
+                ])
+                if(allRoles[0].permissions[0].permissions['Events']['view']){
+                return response.status(200).json(events)
+                }else{
+                    events = events.filter(event=>event.organiser==user.samyak_id);
+                    return response.status(200).json(events)
+                }
+                }else{
+                    return response.status(500).json({message:'Authorization failed'});
+                }
+}}
 })
 
 //delete an event
@@ -220,7 +270,7 @@ router.post('/edit-event',VerifyToken,VerifyUserRole({collection:'Events',permis
                 let promise = Event.updateOne({_id:eventId},{$set:{
                     name:name,
                     department:department,
-                    organiser:organiser,
+                    organiser:organiser.trim(),
                     description:description,
                     multiple_events_allowed:multiple_events_allowed,
                     venue:venue,
@@ -247,7 +297,7 @@ router.post('/edit-event',VerifyToken,VerifyUserRole({collection:'Events',permis
 
 })
 
-router.post('/add-csvEvents',async function(request:express.Request,response:express.Response){
+router.post('/add-csvEvents',VerifyToken,VerifyUserRole({collection:'Events',permission:'add'}),async function(request:express.Request,response:express.Response){
     if(request.files){
         const {newfile} = request.files;
 
@@ -261,7 +311,7 @@ router.post('/add-csvEvents',async function(request:express.Request,response:exp
                     let newevent = new Event({
                         name:event.name,
                         department:event.department,
-                        organiser:event.organiser,
+                        organiser:event.organiser.trim(),
                         description:event.description,
                         multiple_events_allowed:event.multiple_events_allowed,
                         venue:event.venue,
@@ -283,7 +333,7 @@ router.post('/add-csvEvents',async function(request:express.Request,response:exp
   
 })
 
-router.post('/edit-csvEvents',async function(request:express.Request,response:express.Response){
+router.post('/edit-csvEvents',VerifyToken,VerifyUserRole({collection:'Events',permission:'edit'}),async function(request:express.Request,response:express.Response){
     if(request.files){
         const {newfile} = request.files;
 
@@ -294,7 +344,7 @@ router.post('/edit-csvEvents',async function(request:express.Request,response:ex
            let newevent =  await Event.updateOne({code:event.code},{$set:{
                 name:event.name,
                     department:event.department,
-                    organiser:event.organiser,
+                    organiser:event.organiser.trim(),
                     description:event.description,
                     multiple_events_allowed:event.multiple_events_allowed,
                     venue:event.venue,
