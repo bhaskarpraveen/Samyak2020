@@ -56,7 +56,7 @@ router.post('/all-slots',VerifyUserRole({collection:'Events',permission:'manage_
     }
 });
 
-router.post('/delete',VerifyUserRole({collection:'Events',permission:'manage_batches'}),async function(request:express.Request,response:express.Response){
+router.post('/delete',VerifyToken,VerifyUserRole({collection:'Events',permission:'manage_batches'}),async function(request:express.Request,response:express.Response){
     const {slotId} = request.body;
     if(slotId){
         let FindSlot = await EventSlot.findOne({_id:slotId});
@@ -78,7 +78,7 @@ router.post('/delete',VerifyUserRole({collection:'Events',permission:'manage_bat
 
 
 
-router.post('/assign-batch',VerifyUserRole({collection:'Events',permission:'manage_participants'}),async function(request:express.Request,response:express.Response){
+router.post('/assign-batch',VerifyToken,VerifyUserRole({collection:'Events',permission:'manage_participants'}),async function(request:express.Request,response:express.Response){
         const {eventId,batchId} = request.body;
         let {users} = request.body;
         let check=1;
@@ -119,7 +119,7 @@ router.post('/assign-batch',VerifyUserRole({collection:'Events',permission:'mana
         }
 });
 
-router.post('/remove-user',VerifyUserRole({collection:'Events',permission:'manage_participants'}),async function(request:express.Request,response:express.Response){
+router.post('/remove-user',VerifyToken,VerifyUserRole({collection:'Events',permission:'manage_participants'}),async function(request:express.Request,response:express.Response){
     const {userId,eventId,batchId} = request.body;
     if(userId&&eventId&&batchId){
         let user = await User.findOne({_id:userId});
