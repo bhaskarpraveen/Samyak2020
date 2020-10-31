@@ -45,7 +45,7 @@ router.post('/add',VerifyToken,VerifyUserRole({collection:'Events',permission:'m
     }
 })
 
-router.post('/all-slots',VerifyUserRole({collection:'Events',permission:'manage_batches'}),async function(request:express.Request,response:express.Response){
+router.post('/all-slots',VerifyToken,VerifyUserRole({collection:'Events',permission:'manage_batches'}),async function(request:express.Request,response:express.Response){
     const {eventId} = request.body;
     console.log('called')
     if(eventId){
