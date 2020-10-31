@@ -17,8 +17,9 @@ let emailVerification = async function(email:string){
     let user = await User.findOne({email:email})
 
     if(user){
-        //generate token
-        let token = jwt.sign({userId:user._id},JWT_KEY,{expiresIn:'3h'});
+        //generate token No expiry 
+        //If required expiry date - {expiresIn:'3h'}
+        let token = jwt.sign({userId:user._id},JWT_KEY);
 
     let data:emailVerificationData = {
         html:'mail.html',
