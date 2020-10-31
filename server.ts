@@ -21,15 +21,15 @@ connection.once('open',()=>{
     console.log('Connected to mongodb')
 })
 
-var corsOptions = {
-    origin: process.env.FRONTEND || 'http://localhost:4200' ,
-    optionsSuccessStatus: 200 ,// For legacy browser support
-    methods: "GET, PUT, DELETE"
-  }
+// var corsOptions = {
+//     origin: process.env.FRONTEND || 'http://localhost:4200' ,
+//     optionsSuccessStatus: 200 ,// For legacy browser support
+//     methods: "GET, PUT, DELETE"
+//   }
 // Express middlewares
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
-app.use(cors(corsOptions))
+app.use(cors())
 app.use(fileUpload({
     limits:{filesize:50*1024*1024}
 }))
