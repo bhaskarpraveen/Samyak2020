@@ -93,6 +93,7 @@ router.get('/event-registrations',async function(request:express.Request,respons
            }
            
        }
+    
         return response.status(200).json({registrations:record});
     }else{
         return response.status(501).json({message:'Enter event id'});

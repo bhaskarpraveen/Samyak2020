@@ -47,6 +47,7 @@ router.post('/add',VerifyToken,VerifyUserRole({collection:'Events',permission:'m
 
 router.post('/all-slots',VerifyUserRole({collection:'Events',permission:'manage_batches'}),async function(request:express.Request,response:express.Response){
     const {eventId} = request.body;
+    console.log('called')
     if(eventId){
         let slots = await EventSlot.find({event_id:eventId});
         return response.status(200).json({slots:slots})

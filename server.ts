@@ -21,11 +21,24 @@ connection.once('open',()=>{
     console.log('Connected to mongodb')
 })
 
-
+const corsOpts = {
+    origin: '*',
+  
+    methods: [
+      'GET',
+      'POST',
+      'PUT',
+      'DELETE'
+    ],
+  
+    allowedHeaders: [
+      '*'
+    ],
+  };
 // Express middlewares
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
-app.use(cors())
+app.use(cors(corsOpts))
 app.use(fileUpload({
     limits:{filesize:50*1024*1024}
 }))
