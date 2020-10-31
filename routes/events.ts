@@ -364,12 +364,12 @@ router.post('/edit-csvEvents',VerifyToken,VerifyUserRole({collection:'Events',pe
 router.get('/get-events',async function(request:express.Request,response:express.Response){
     const {event_department,event_type} = request.query;
     if(event_department&&event_type){
-        let type = await Event.findOne({name:String(event_type)});
+        let type = await EventType.findOne({name:String(event_type)});
         if(type){
             let events = await Event.find({type:type._id,department:String(event_department)});
             return response.status(200).json({events:events})
         }else{
-        return response.status(501).json({message:'Query not found'})
+        return response.status(501).json({message:'Query invalid'})
         } 
     }else{
         return response.status(501).json({message:'Query not found'})
