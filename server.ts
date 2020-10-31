@@ -12,7 +12,7 @@ import RegisterRouter from './routes/event_registrations';
 const app:express.Application = express();
 dotenv.config();
 const PORT = process.env.PORT || 5000;
-
+import morgan from 'morgan';
 //Database configurations
 const DATABSE_URL = process.env.DATABSE_URL || 'mongodb://127.0.0.1:27017';
 mongoose.connect(DATABSE_URL,{useNewUrlParser:true, useUnifiedTopology: true });
@@ -21,28 +21,19 @@ connection.once('open',()=>{
     console.log('Connected to mongodb')
 })
 
-const corsOpts = {
-    origin: '*',
-  
-    methods: [
-      'GET',
-      'POST',
-      'PUT',
-      'DELETE'
-    ],
-  
-    allowedHeaders: [
-      '*'
-    ],
-  };
+var corsOptions = {
+    origin: process.env.FRONTEND || 'http://localhost:4200' ,
+    optionsSuccessStatus: 200 ,// For legacy browser support
+    methods: "GET, PUT, DELETE"
+  }
 // Express middlewares
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
-app.use(cors(corsOpts))
+app.use(cors(corsOptions))
 app.use(fileUpload({
     limits:{filesize:50*1024*1024}
 }))
-
+app.use(morgan('common'))
 // Routes
 app.use('/users',UsersRouter);
 app.use('/administration',AdminRouter);
