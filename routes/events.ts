@@ -47,10 +47,21 @@ router.post('/add-eventType',VerifyToken,VerifyUserRole({collection:'Events',per
 
 //get all event types
 router.get('/all-eventTypes',VerifyToken,VerifyUserRole({collection:'Events',permission:'view'}),async function(request:express.Request,response:express.Response){
-    let eventTypes = await EventType.find({});
+    let eventTypes = await EventType.find({})
     return response.status(200).json(eventTypes)
 })
 
+//Formatted event types and departments for home page
+router.get('/event-types',async function(request:express.Request,response:express.Response){
+    let eventTypes = await EventType.find({})
+    let records:Object[]=[]
+    for(let i=0;i<eventTypes.length;i++){
+        let department = await Event.find({type:eventTypes[i]._id}).distinct('department')
+        records.push({type:eventTypes[i].name,departments:department})
+    }
+   
+    return response.status(200).json({events:records})
+})
 //delete an event type
 router.post('delete-eventType',VerifyToken,VerifyUserRole({collection:'Events',permission:'delete'}),async function(request:express.Request,response:express.Response){
     const {typeId} = request.body;
