@@ -56,8 +56,13 @@ router.get('/event-types',async function(request:express.Request,response:expres
     let eventTypes = await EventType.find({})
     let records:Object[]=[]
     for(let i=0;i<eventTypes.length;i++){
-        let department = await Event.find({type:eventTypes[i]._id}).distinct('department')
+        if(eventTypes[i].name=='Technical'){
+            let department = await Event.find({type:eventTypes[i]._id}).distinct('department')
         records.push({type:eventTypes[i].name,departments:department})
+        }else{
+            records.push({type:eventTypes[i].name})
+        }
+        
     }
    
     return response.status(200).json({events:records})
