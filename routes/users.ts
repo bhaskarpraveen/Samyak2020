@@ -207,7 +207,7 @@ router.post('/check-token',async function(request:jwt_request,response:express.R
     })
 })
 
-router.post('/change-password',async function(request:jwt_request,response:express.Response){
+router.post('/change-password',async function(request:express.Request,response:express.Response){
     
         
         const {password,token} = request.body;
