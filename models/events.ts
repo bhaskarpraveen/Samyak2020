@@ -13,7 +13,9 @@ interface IEvent extends Document{
     venue?:String,
     registration_price?:Number,
     type:Schema.Types.ObjectId,
-    code:String
+    code:String,
+    faculty_organiser?:String,
+    faculty_contact?:String
 }
 let EventSchema = new Schema({
     name:{type:String,required:true},
@@ -25,6 +27,8 @@ let EventSchema = new Schema({
     created_at:{type:Date,default:Date.now},
     updated_at:{type:Date},
     venue:{type:String},
+    faculty_organiser:{type:String},
+    faculty_contact:{type:String},
     registration_price:{type:Number},
     type:{type:Schema.Types.ObjectId,required:true},
     code:{type:String,required:true}

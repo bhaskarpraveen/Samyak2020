@@ -123,9 +123,10 @@ router.post('/add-event',VerifyToken,VerifyUserRole({collection:'Events',permiss
     description,
     multiple_events_allowed,
     venue,
-    registration_price,
     type,
     code,
+    faculty_organiser,
+    faculty_contact
     } = request.body;
 
     if(name&&department&&description&&multiple_events_allowed&&type&&code){
@@ -143,9 +144,10 @@ router.post('/add-event',VerifyToken,VerifyUserRole({collection:'Events',permiss
                     description:description,
                     multiple_events_allowed:multiple_events_allowed,
                     venue:venue,
-                    registration_price:registration_price,
                     type:type,
-                    code:code
+                    code:code,
+                    faculty_organiser:faculty_organiser,
+                    faculty_contact:faculty_contact
                 })
 
                 let promise = event.save();
@@ -273,9 +275,10 @@ router.post('/edit-event',VerifyToken,VerifyUserRole({collection:'Events',permis
         description,
         multiple_events_allowed,
         venue,
-        registration_price,
         type,
         code,
+        faculty_organiser,
+        faculty_contact
         } = request.body;
 
         if(eventId&&name&&department&&description&&multiple_events_allowed&&type&&code){
@@ -290,9 +293,10 @@ router.post('/edit-event',VerifyToken,VerifyUserRole({collection:'Events',permis
                     description:description,
                     multiple_events_allowed:multiple_events_allowed,
                     venue:venue,
-                    registration_price:registration_price,
                     type:type,
-                    code:code
+                    code:code,
+                    faculty_organiser:faculty_organiser,
+                    faculty_contact:faculty_contact
                 }}) ;
                 promise.then(doc=>{
                     return response.status(200).json({message:'Successfully updated',response:doc})
@@ -331,9 +335,10 @@ router.post('/add-csvEvents',VerifyToken,VerifyUserRole({collection:'Events',per
                         description:event.description,
                         multiple_events_allowed:event.multiple_events_allowed,
                         venue:event.venue,
-                        registration_price:event.registration_price,
                         type:findType._id,
-                        code:event.code
+                        code:event.code,
+                        faculty_organiser:event.faculty_organiser,
+                        faculty_contact:event.faculty_contact
                     })
 
                 await newevent.save();
@@ -364,9 +369,10 @@ router.post('/edit-csvEvents',VerifyToken,VerifyUserRole({collection:'Events',pe
                     description:event.description,
                     multiple_events_allowed:event.multiple_events_allowed,
                     venue:event.venue,
-                    registration_price:event.registration_price,
                     type:event.type,
-                    code:event.code
+                    code:event.code,
+                    faculty_organiser:event.faculty_organiser,
+                    faculty_contact:event.faculty_contact
             }},{ upsert: false })
         })
         fs.unlinkSync(__dirname+'/events.csv');
