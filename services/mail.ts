@@ -40,7 +40,7 @@ try{
         html: htmlToSend
     };
    
-    await transporter.sendMail(mailOptions);
+   transporter.sendMail(mailOptions);
     return {status:200,message:'Successfully sent'};
 }
   catch(e){

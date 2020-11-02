@@ -151,15 +151,17 @@ router.post('/forgot-password',async function(request:express.Request,response:e
         const user = await User.findOne({email:email});
 
         if(user){
-            let new_string =  Math.random().toString(36).slice(-8)
-            let new_password = await User.hashPassword(new_string);
-            let promise = User.updateOne({email:email},{$set:{password:String(new_password)}})
-            promise.then(async (doc)=>{
+            // let new_string =  Math.random().toString(36).slice(-8)
+            // let new_password = await User.hashPassword(new_string);
+            // let promise = User.updateOne({email:email},{$set:{password:String(new_password)}})
+            // promise.then(async (doc)=>{
+                let token = jwt.sign({email:email,userId:user._id},JWT_KEY,{expiresIn:'3h'})
                 let data = {
                     html:'forgot_password.html',
                     replacements:{
                         name:user.name,
-                        password:new_string
+                        // password:new_string
+                        token:token
                     },
                     from:'praveennaidu264@gmail.com',
                     to:email,
@@ -173,11 +175,11 @@ router.post('/forgot-password',async function(request:express.Request,response:e
                             return response.status(res.status).json({message:res.message});
                         })
 
-            })
+            // })
         
-            promise.catch(err=>{
-                return response.status(501).json({message:err.message})
-            })
+            // promise.catch(err=>{
+            //     return response.status(501).json({message:err.message})
+            // })
         }else{
             return response.status(501).json({message:'User not found'})
         }
@@ -191,17 +193,42 @@ interface jwt_request extends express.Request{
     tokenData?:{userId?:String}
 }
 
+router.post('/check-token',async function(request:jwt_request,response:express.Response){
+    const {token} = request.body;
 
-router.post('/change-password',VerifyToken,async function(request:jwt_request,response:express.Response){
-    if(request.tokenData){
-        const {userId} = request.tokenData;
-        const {current_password,new_password} = request.body;
-        if(current_password&&new_password){
-                let FindUser = await User.findOne({_id:userId});
+    jwt.verify(token,JWT_KEY,function(err: any,data: { userId?: String | undefined; } | undefined){
+        if(err){
+            return response.status(400).json(false)
+        }
+        else if(data){
+            return response.status(200).json(true)
+            
+        }
+    })
+})
+
+router.post('/change-password',async function(request:jwt_request,response:express.Response){
+    
+        
+        const {password,token} = request.body;
+        if(password){
+            // jwt.verify(token,JWT_KEY,function(err,data){
+            //     if(err){
+            //         return response.status(400).json({message:'Authorization failed'})
+            //     }
+            //     else if(data){
+            //         request.tokenData = data;
+            //         next();
+            //     }
+            // })
+            let data:any = await jwt.verify(token,JWT_KEY);
+            if(data){
+                data = eval(data)
+                let FindUser = await User.findOne({_id:eval(data.userId)});
                     if(FindUser){
-                        if(FindUser.isValid(current_password)){
-                            let hash_password = await User.hashPassword(new_password);
-                            let promise = User.updateOne({_id:userId},{$set:{password:String(hash_password)}});
+                      
+                            let hash_password = await User.hashPassword(password);
+                            let promise = User.updateOne({_id:data.userId},{$set:{password:String(hash_password)}});
     
                             promise.then(doc=>{
                                 return response.status(200).json({message:'Successfully changed'})
@@ -211,13 +238,14 @@ router.post('/change-password',VerifyToken,async function(request:jwt_request,re
                                 return response.status(501).json({message:err.message})
                             })
 
-                        }else{
-                            return response.status(501).json({message:'Invalid password'})
-                        }
+                        
                         }else{
                             return response.status(501).json({message:'User not found'})
                         }
-                   
+            }else{
+                return response.status(501).json({message:'invalid token'})
+            }
+          
                        
                 
         }else{
@@ -225,7 +253,7 @@ router.post('/change-password',VerifyToken,async function(request:jwt_request,re
         }
         
     
-    }
+    
     
    
 })
