@@ -212,16 +212,17 @@ router.post('/change-password',async function(request:jwt_request,response:expre
         
         const {password,token} = request.body;
         if(password){
-            // jwt.verify(token,JWT_KEY,function(err,data){
-            //     if(err){
-            //         return response.status(400).json({message:'Authorization failed'})
-            //     }
-            //     else if(data){
-            //         request.tokenData = data;
-            //         next();
-            //     }
-            // })
-            let data:any = await jwt.verify(token,JWT_KEY);
+            let data;
+            jwt.verify(token,JWT_KEY,function(err: any,res: { userId?: String | undefined; } | undefined){
+                if(err){
+                    data=0;
+                    return response.status(400).json({message:'Authorization failed'})
+                }
+                else if(res){
+                    data=res;
+                }
+            })
+            
             if(data){
                 data = eval(data)
                 let FindUser = await User.findOne({_id:eval(data.userId)});
