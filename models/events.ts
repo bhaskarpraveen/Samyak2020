@@ -13,6 +13,7 @@ interface IEvent extends Document{
     venue?:String,
     registration_price?:Number,
     type:Schema.Types.ObjectId,
+    image?:String
     code:String,
     faculty_organiser?:String,
     faculty_contact?:String
@@ -26,6 +27,7 @@ let EventSchema = new Schema({
     status:{type:Number,default:1},
     created_at:{type:Date,default:Date.now},
     updated_at:{type:Date},
+    image:{type:String},
     venue:{type:String},
     faculty_organiser:{type:String},
     faculty_contact:{type:String},

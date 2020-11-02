@@ -126,7 +126,8 @@ router.post('/add-event',VerifyToken,VerifyUserRole({collection:'Events',permiss
     type,
     code,
     faculty_organiser,
-    faculty_contact
+    faculty_contact,
+    image
     } = request.body;
 
     if(name&&department&&description&&multiple_events_allowed&&type&&code){
@@ -147,7 +148,8 @@ router.post('/add-event',VerifyToken,VerifyUserRole({collection:'Events',permiss
                     type:type,
                     code:code,
                     faculty_organiser:faculty_organiser || '-',
-                    faculty_contact:faculty_contact|| '-'
+                    faculty_contact:faculty_contact|| '-',
+                    image:image
                 })
 
                 let promise = event.save();
@@ -278,7 +280,8 @@ router.post('/edit-event',VerifyToken,VerifyUserRole({collection:'Events',permis
         type,
         code,
         faculty_organiser,
-        faculty_contact
+        faculty_contact,
+        image,
         } = request.body;
 
         if(eventId&&name&&department&&description&&multiple_events_allowed&&type&&code){
@@ -296,7 +299,8 @@ router.post('/edit-event',VerifyToken,VerifyUserRole({collection:'Events',permis
                     type:type,
                     code:code,
                     faculty_organiser:faculty_organiser ||'-',
-                    faculty_contact:faculty_contact||'-'
+                    faculty_contact:faculty_contact||'-',
+                    image:image
                 }}) ;
                 promise.then(doc=>{
                     return response.status(200).json({message:'Successfully updated',response:doc})
