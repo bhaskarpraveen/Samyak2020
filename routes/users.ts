@@ -189,11 +189,9 @@ router.post('/forgot-password',async function(request:express.Request,response:e
 })
 
 
-interface jwt_request extends express.Request{
-    tokenData?:{userId?:String}
-}
 
-router.post('/check-token',async function(request:jwt_request,response:express.Response){
+
+router.post('/check-token',async function(request:express.Request,response:express.Response){
     const {token} = request.body;
 
     jwt.verify(token,JWT_KEY,function(err: any,data: { userId?: String | undefined; } | undefined){
