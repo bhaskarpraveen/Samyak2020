@@ -146,8 +146,8 @@ router.post('/add-event',VerifyToken,VerifyUserRole({collection:'Events',permiss
                     venue:venue,
                     type:type,
                     code:code,
-                    faculty_organiser:faculty_organiser,
-                    faculty_contact:faculty_contact
+                    faculty_organiser:faculty_organiser || '-',
+                    faculty_contact:faculty_contact|| '-'
                 })
 
                 let promise = event.save();
@@ -295,8 +295,8 @@ router.post('/edit-event',VerifyToken,VerifyUserRole({collection:'Events',permis
                     venue:venue,
                     type:type,
                     code:code,
-                    faculty_organiser:faculty_organiser,
-                    faculty_contact:faculty_contact
+                    faculty_organiser:faculty_organiser ||'-',
+                    faculty_contact:faculty_contact||'-'
                 }}) ;
                 promise.then(doc=>{
                     return response.status(200).json({message:'Successfully updated',response:doc})
@@ -337,8 +337,8 @@ router.post('/add-csvEvents',VerifyToken,VerifyUserRole({collection:'Events',per
                         venue:event.venue,
                         type:findType._id,
                         code:event.code,
-                        faculty_organiser:event.faculty_organiser,
-                        faculty_contact:event.faculty_contact
+                        faculty_organiser:event.faculty_organiser||'-',
+                        faculty_contact:event.faculty_contact||'-'
                     })
 
                 await newevent.save();
@@ -371,8 +371,8 @@ router.post('/edit-csvEvents',VerifyToken,VerifyUserRole({collection:'Events',pe
                     venue:event.venue,
                     type:event.type,
                     code:event.code,
-                    faculty_organiser:event.faculty_organiser,
-                    faculty_contact:event.faculty_contact
+                    faculty_organiser:event.faculty_organiser||'-',
+                    faculty_contact:event.faculty_contact||'-'
             }},{ upsert: false })
         })
         fs.unlinkSync(__dirname+'/events.csv');
