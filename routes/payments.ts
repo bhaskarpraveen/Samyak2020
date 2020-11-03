@@ -20,20 +20,21 @@ router.get('/create-request',VerifyToken,async function(request:jwt_request,resp
         const {userId} = request.tokenData;
         const user = await User.findOne({_id:userId})
         if(user){
-                
+             
             let headers = { 'X-Api-Key': process.env.INSTAMOJO_KEY , 'X-Auth-Token': process.env.INSTAMOJO_TOKEN}
-            let payload = {
+            const payload = {
             purpose: 'Samyak 2020 registration',
             amount: '25',
             phone: user.mobile,
             buyer_name: user.name,
             redirect_url: 'http://www.example.com/redirect/',
             send_email: true,
-            webhook: 'https://klsamyak-dev.tk/payments/webhook',
+            // webhook: 'https://klsamyak-dev.tk/payments/webhook',
             send_sms: true,
             email: user.email,
             allow_repeated_payments: false
         }
+        
         try{
           let payment_response=  await axios({
               method:'POST',
@@ -41,7 +42,7 @@ router.get('/create-request',VerifyToken,async function(request:jwt_request,resp
               data:payload,
               headers:headers
           })
-            
+           
             let payment_request = new PaymentRequest({
             id: payment_response.data["payment_request"].id,
             user_id:user._id,
@@ -55,11 +56,12 @@ router.get('/create-request',VerifyToken,async function(request:jwt_request,resp
         shorturl: payment_response.data["payment_request"].shorturl,
         longurl: payment_response.data["payment_request"].longurl,
         redirect_url: payment_response.data["payment_request"].redirect_url,
-        webhook: payment_response.data["payment_request"].webhook,
+        // webhook: payment_response.data["payment_request"].webhook,
         created_at:payment_response.data["payment_request"].reated_at,
         modified_at: payment_response.data["payment_request"].modified_at,
         allow_repeated_payments: payment_response.data["payment_request"].allow_repeated_payments
             })
+           
            let promise =  payment_request.save()
            promise.then(doc=>{
             return response.status(200).json({message:'created',request:doc})
@@ -80,57 +82,58 @@ router.get('/create-request',VerifyToken,async function(request:jwt_request,resp
     }
 });
 
-router.post('/webhook',async function(request:express.Request,response:express.Response){
-    const {
-        amount,
-        buyer	,
-        buyer_name,
-        buyer_phone,	
-        currency,
-        fees,	
-        longurl	, 
-        mac	,
-        payment_id,
-        payment_request_id,	
-        purpose,	
-        shorturl,	
-        status} = request.body;
+// router.post('/webhook',async function(request:express.Request,response:express.Response){
+//     const {
+//         amount,
+//         buyer	,
+//         buyer_name,
+//         buyer_phone,	
+//         currency,
+//         fees,	
+//         longurl	, 
+//         mac	,
+//         payment_id,
+//         payment_request_id,	
+//         purpose,	
+//         shorturl,	
+//         status} = request.body;
 
-        if(amount&&buyer&&buyer_name&&buyer_phone&&	currency&&fees&&longurl&&mac&&payment_id&&payment_request_id&&purpose&&shorturl&&status){
-            let user = await User.findOne({email:buyer});
-            if(user){
+//         if(amount&&buyer&&buyer_name&&buyer_phone&&	currency&&fees&&longurl&&mac&&payment_id&&payment_request_id&&purpose&&shorturl&&status){
+//             let user = await User.findOne({email:buyer});
+//             if(user){
 
-                let payment = new Payment({
-                    amount:amount,
-                    user_id:user._id,
-                    currency:currency,
-                    fees:fees,	
-                    longurl:longurl	, 
-                    mac	:mac,
-                    payment_id:payment_id,
-                    payment_request_id:payment_request_id,	
-                    purpose:purpose,	
-                    shorturl:shorturl,	
-                    status:status,
-                })
-
-                let promise =  payment.save()
-                promise.then(doc=>{
-                 return response.status(200).json({message:'created',payment:doc})
-             });
+//                 let payment = new Payment({
+//                     amount:amount,
+//                     user_id:user._id,
+//                     currency:currency,
+//                     fees:fees,	
+//                     longurl:longurl	, 
+//                     mac	:mac,
+//                     payment_id:payment_id,
+//                     payment_request_id:payment_request_id,	
+//                     purpose:purpose,	
+//                     shorturl:shorturl,	
+//                     status:status,
+//                 })
+// 	console.log(payment)
+//                 let promise =  payment.save()
+//                 promise.then(doc=>{
+//                  return response.status(200).json({message:'created',payment:doc})
+//              });
      
-             promise.catch(err=>{
-                 return response.status(501).json({message:err.message})
-             })
+//              promise.catch(err=>{
+// 	console.log(err)
+//                  return response.status(501).json({message:err.message})
+//              })
 
-        }
-            else{
-            return response.status(501).json({message:'Invalid user'})
-        }
+//         }
+//             else{
+//             return response.status(501).json({message:'Invalid user'})
+//         }
 
-        }else{
-            return response.status(501).json({message:'Invalid details'})
-        }
-})
+//         }else{
+//             return response.status(501).json({message:'Invalid details'})
+//         }
+// })
 
 export default router;
