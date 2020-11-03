@@ -8,6 +8,7 @@ import VerifyToken from '../middlewares/verify_token';
 import axios from 'axios';
 import PaymentRequest from '../models/payment_requests';
 import user_roles from '../models/user_roles';
+import Payment from '../models/payments';
 const JWT_KEY =  process.env.JWT_KEY ||'jsonwebtoken'
 
 interface jwt_request extends express.Request{
@@ -23,12 +24,12 @@ router.get('/create-request',VerifyToken,async function(request:jwt_request,resp
             let headers = { 'X-Api-Key': process.env.INSTAMOJO_KEY , 'X-Auth-Token': process.env.INSTAMOJO_TOKEN}
             let payload = {
             purpose: 'Samyak 2020 registration',
-            amount: '250',
+            amount: '25',
             phone: user.mobile,
             buyer_name: user.name,
             redirect_url: 'http://www.example.com/redirect/',
             send_email: true,
-            webhook: 'http://klsamyak-dev.tk/payments/webhook',
+            webhook: 'https://klsamyak-dev.tk/payments/webhook',
             send_sms: true,
             email: user.email,
             allow_repeated_payments: false
@@ -93,7 +94,43 @@ router.post('/webhook',async function(request:express.Request,response:express.R
         payment_request_id,	
         purpose,	
         shorturl,	
-        status} = request.body
+        status} = request.body;
+
+        if(amount&&buyer&&buyer_name&&buyer_phone&&	currency&&fees&&longurl&&mac&&payment_id&&payment_request_id&&purpose&&shorturl&&status){
+            let user = await User.findOne({email:buyer});
+            if(user){
+
+                let payment = new Payment({
+                    amount:amount,
+                    user_id:user._id,
+                    currency:currency,
+                    fees:fees,	
+                    longurl:longurl	, 
+                    mac	:mac,
+                    payment_id:payment_id,
+                    payment_request_id:payment_request_id,	
+                    purpose:purpose,	
+                    shorturl:shorturl,	
+                    status:status,
+                })
+
+                let promise =  payment.save()
+                promise.then(doc=>{
+                 return response.status(200).json({message:'created',payment:doc})
+             });
+     
+             promise.catch(err=>{
+                 return response.status(501).json({message:err.message})
+             })
+
+        }
+            else{
+            return response.status(501).json({message:'Invalid user'})
+        }
+
+        }else{
+            return response.status(501).json({message:'Invalid details'})
+        }
         console.log(request.body);
 })
 
