@@ -11,10 +11,11 @@ const router:express.Router = express.Router();
 router.post('/add',VerifyToken,VerifyUserRole({collection:'Events',permission:'manage_batches'}),async function(request:express.Request,response:express.Response){
     const {name,meet_link,eventId,date,start_time,end_time} = request.body;
     if(name&&meet_link&&eventId&&date&&start_time&&end_time){
-        let findSlot = await EventSlot.findOne({name:name});
-        if(!findSlot){
-            let findEvent = await Event.findOne({_id:eventId});
-            if(findEvent){
+        let findEvent = await Event.findOne({_id:eventId});
+        if(findEvent){
+            let findSlot = await EventSlot.findOne({name:name,event_id:findEvent._id});
+           
+            if(!findSlot){
                 let new_slot = new EventSlot({
                     name:name,
                     meet_link:meet_link,
@@ -33,12 +34,12 @@ router.post('/add',VerifyToken,VerifyUserRole({collection:'Events',permission:'m
                     return response.status(501).json({message:err.message})
                 })
             }else{
-                return response.status(501).json({message:'Invalid event code'});
+                return response.status(501).json({message:'Slot already exists'});
             }
            
 
         }else{
-            return response.status(501).json({message:'Slot already exists'})
+            return response.status(501).json({message:'Invalid event code'})
         }
     }else{
         return response.status(501).json({message:'enter all details'})
@@ -47,7 +48,6 @@ router.post('/add',VerifyToken,VerifyUserRole({collection:'Events',permission:'m
 
 router.post('/all-slots',VerifyToken,VerifyUserRole({collection:'Events',permission:'manage_batches'}),async function(request:express.Request,response:express.Response){
     const {eventId} = request.body;
-    console.log('called')
     if(eventId){
         let slots = await EventSlot.find({event_id:eventId});
         return response.status(200).json({slots:slots})

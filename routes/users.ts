@@ -209,21 +209,14 @@ router.post('/change-password',async function(request:express.Request,response:e
     
         
         const {password,token} = request.body;
-        if(password){
-            let data;
-            jwt.verify(token,JWT_KEY,function(err: any,res: { userId?: String | undefined; } | undefined){
+        if(password&&token){
+           
+            jwt.verify(token,JWT_KEY,async function(err: any,data: { userId?: String | undefined; } | undefined){
                 if(err){
-                    data=0;
-                    return response.status(400).json({message:'Authorization failed'})
+                    return response.status(400).json({message:'invalid token'})
                 }
-                else if(res){
-                    data=res;
-                }
-            })
-            
-            if(data){
-                data = eval(data)
-                let FindUser = await User.findOne({_id:eval(data.userId)});
+                else if(data){
+                    let FindUser = await User.findOne({_id:data.userId});
                     if(FindUser){
                       
                             let hash_password = await User.hashPassword(password);
@@ -241,12 +234,9 @@ router.post('/change-password',async function(request:express.Request,response:e
                         }else{
                             return response.status(501).json({message:'User not found'})
                         }
-            }else{
-                return response.status(501).json({message:'invalid token'})
-            }
-          
-                       
-                
+                }
+            })
+                  
         }else{
             return response.status(501).json({message:'Enter valid details'})
         }
