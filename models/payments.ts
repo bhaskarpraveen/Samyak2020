@@ -16,6 +16,8 @@ let PaymentSchema = new Schema({
     payment_id:String,
     payment_request_id:String,	
     status:String,
+    instrument_type: String,
+    billing_instrument: String,
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date },
 })

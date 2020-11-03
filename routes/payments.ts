@@ -99,13 +99,22 @@ router.post('/add-payment',VerifyToken,async function(request:jwt_request,respon
                         url:'https://test.instamojo.com/api/1.1/payment-requests/'+payment_request_id+'/'+payment_id,
                         headers:headers
                     })
-                    // let payment = new Payment({
-                    //     user_id:user._id, 
-                    //     payment_id:payment_response.data['payment_request'].payment.payment_id,
-                    //     payment_request_id:String,	
-                    //     status:payment_response.data['payment_request'].payment.status,
-                    // })
-                    console.log(payment_response.data['payment_request'])
+                    let payment = new Payment({
+                        user_id:user._id, 
+                        payment_id:payment_response.data['payment_request'].payment.payment_id,
+                        payment_request_id:payment_response.data['payment_request'].payment.payment_request_id,	
+                        instrument_type:payment_response.data['payment_request'].payment.instrument_type,
+                        billing_instrument:payment_response.data['payment_request'].payment.billing_instrument,
+                        status:payment_response.data['payment_request'].payment.status,
+                    })
+                    let promise =  payment.save()
+                    promise.then(doc=>{
+                     return response.status(200).json({message:'Created',request:doc})
+                 });
+         
+                 promise.catch(err=>{
+                     return response.status(501).json({message:err.message})
+                 })
                 }catch(e){
                     return response.status(501).json({message:e.response.data})
                 }
@@ -123,58 +132,6 @@ router.post('/add-payment',VerifyToken,async function(request:jwt_request,respon
    
 })
 
-// router.post('/webhook',async function(request:express.Request,response:express.Response){
-//     const {
-//         amount,
-//         buyer	,
-//         buyer_name,
-//         buyer_phone,	
-//         currency,
-//         fees,	
-//         longurl	, 
-//         mac	,
-//         payment_id,
-//         payment_request_id,	
-//         purpose,	
-//         shorturl,	
-//         status} = request.body;
 
-//         if(amount&&buyer&&buyer_name&&buyer_phone&&	currency&&fees&&longurl&&mac&&payment_id&&payment_request_id&&purpose&&shorturl&&status){
-//             let user = await User.findOne({email:buyer});
-//             if(user){
-
-//                 let payment = new Payment({
-//                     amount:amount,
-//                     user_id:user._id,
-//                     currency:currency,
-//                     fees:fees,	
-//                     longurl:longurl	, 
-//                     mac	:mac,
-//                     payment_id:payment_id,
-//                     payment_request_id:payment_request_id,	
-//                     purpose:purpose,	
-//                     shorturl:shorturl,	
-//                     status:status,
-//                 })
-// 	console.log(payment)
-//                 let promise =  payment.save()
-//                 promise.then(doc=>{
-//                  return response.status(200).json({message:'created',payment:doc})
-//              });
-     
-//              promise.catch(err=>{
-// 	console.log(err)
-//                  return response.status(501).json({message:err.message})
-//              })
-
-//         }
-//             else{
-//             return response.status(501).json({message:'Invalid user'})
-//         }
-
-//         }else{
-//             return response.status(501).json({message:'Invalid details'})
-//         }
-// })
 
 export default router;
