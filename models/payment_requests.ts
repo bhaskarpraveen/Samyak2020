@@ -16,7 +16,7 @@ interface IPaymentRequestSchema extends Document{
         webhook: String,
         created_at?:Date,
         modified_at?: Date,
-        allow_repeated_payments: Boolean,default:false,
+        allow_repeated_payments: Boolean
 }
 
 let PaymentRequestSchema = new Schema({
@@ -38,4 +38,4 @@ let PaymentRequestSchema = new Schema({
         allow_repeated_payments: {type:Boolean,default:false},
 })
 
-export default model<IPaymentRequestSchema>('paymant_requests',PaymentRequestSchema)
+export default model<IPaymentRequestSchema>('payment_requests',PaymentRequestSchema)

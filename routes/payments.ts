@@ -131,7 +131,6 @@ router.post('/webhook',async function(request:express.Request,response:express.R
         }else{
             return response.status(501).json({message:'Invalid details'})
         }
-        console.log(request.body);
 })
 
 export default router;
