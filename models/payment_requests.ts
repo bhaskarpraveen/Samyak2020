@@ -13,7 +13,6 @@ interface IPaymentRequestSchema extends Document{
         shorturl?: String,
         longurl: String,
         redirect_url: String,
-        webhook: String,
         created_at?:Date,
         modified_at?: Date,
         allow_repeated_payments: Boolean
@@ -32,7 +31,6 @@ let PaymentRequestSchema = new Schema({
         shorturl: {type:String},
         longurl: {type:String,required:true},
         redirect_url: {type:String,required:true},
-        webhook: {type:String,required:true},
         created_at:{type:Date},
         modified_at: {type:Date},
         allow_repeated_payments: {type:Boolean,default:false},

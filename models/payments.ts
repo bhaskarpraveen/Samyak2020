@@ -22,4 +22,4 @@ let PaymentSchema = new Schema({
     updated_at: { type: Date },
 })
 
-export default model<IPaymentSchema>('paymant_requests',PaymentSchema)
+export default model<IPaymentSchema>('payments',PaymentSchema)
