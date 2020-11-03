@@ -8,6 +8,7 @@ import RoleRouter from './routes/roles';
 import EventRouter from './routes/events'
 import fileUpload from 'express-fileupload';
 import SlotRouter from './routes/slots';
+import PaymentRouter from './routes/payments';
 import RegisterRouter from './routes/event_registrations';
 const app:express.Application = express();
 dotenv.config();
@@ -41,6 +42,7 @@ app.use('/roles',RoleRouter);
 app.use('/events',EventRouter);
 app.use('/slots',SlotRouter);
 app.use('/register',RegisterRouter);
+app.use('/payments',PaymentRouter);
 
 app.listen(PORT,()=>{
     console.log(`Running on port ${PORT}`);
