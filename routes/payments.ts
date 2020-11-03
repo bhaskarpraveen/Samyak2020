@@ -27,7 +27,7 @@ router.get('/create-request',VerifyToken,async function(request:jwt_request,resp
             amount: '25',
             phone: user.mobile,
             buyer_name: user.name,
-            redirect_url: 'http://www.example.com/redirect/',
+            redirect_url: 'https://blissful-mcnulty-742973.netlify.app/#/payment-verification',
             send_email: true,
             // webhook: 'https://klsamyak-dev.tk/payments/webhook',
             send_sms: true,
@@ -72,6 +72,7 @@ router.get('/create-request',VerifyToken,async function(request:jwt_request,resp
         })
         }catch(e){
             console.log(e.response.data)
+            return response.status(501).json({message:e.response.data})
         }
        
         }else{
@@ -81,6 +82,46 @@ router.get('/create-request',VerifyToken,async function(request:jwt_request,resp
         response.status(501).json({message:'Invalid token'})
     }
 });
+
+
+router.post('/add-payment',VerifyToken,async function(request:jwt_request,response:express.Response){
+    if(request.tokenData){
+        const {userId} = request.tokenData;
+
+        const user = await User.findOne({_id:userId})
+        if(user){
+            const {payment_id,payment_status,payment_request_id}= request.body;
+            if(payment_id&&payment_status&&payment_request_id){
+                let headers = { 'X-Api-Key': process.env.INSTAMOJO_KEY , 'X-Auth-Token': process.env.INSTAMOJO_TOKEN}
+                try{
+                    let payment_response=  await axios({
+                        method:'POST',
+                        url:'https://test.instamojo.com/api/1.1/payment-requests/'+payment_request_id+'/'+payment_id,
+                        headers:headers
+                    })
+                    // let payment = new Payment({
+                    //     user_id:user._id, 
+                    //     payment_id:payment_response.data['payment_request'].payment.payment_id,
+                    //     payment_request_id:String,	
+                    //     status:payment_response.data['payment_request'].payment.status,
+                    // })
+                    console.log(payment_response.data['payment_request'])
+                }catch(e){
+                    return response.status(501).json({message:e.response.data})
+                }
+
+            }else{
+                return response.status(501).json({message:'Enter all details'})
+            }
+        }else{
+            return response.status(501).json({message:'Invalid user'})
+        }
+    
+    }else{
+        return response.status(501).json({message:'Invalid token'})
+    }
+   
+})
 
 // router.post('/webhook',async function(request:express.Request,response:express.Response){
 //     const {
