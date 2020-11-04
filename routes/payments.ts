@@ -28,7 +28,7 @@ router.get('/create-request',VerifyToken,async function(request:jwt_request,resp
             phone: user.mobile,
             buyer_name: user.name,
             redirect_url: 'https://blissful-mcnulty-742973.netlify.app/#/payment-verification',
-            send_email: true,
+            send_email: false,
             // webhook: 'https://klsamyak-dev.tk/payments/webhook',
             send_sms: true,
             email: user.email,
@@ -92,7 +92,9 @@ router.post('/add-payment',VerifyToken,async function(request:jwt_request,respon
         if(user){
             const {payment_id,payment_status,payment_request_id}= request.body;
             if(payment_id&&payment_status&&payment_request_id){
-                let headers = { 'X-Api-Key': process.env.INSTAMOJO_KEY , 'X-Auth-Token': process.env.INSTAMOJO_TOKEN}
+                let checkpayment = await Payment.findOne({payment_request_id:payment_request_id,payment_id:payment_id});
+                if(!checkpayment){
+                    let headers = { 'X-Api-Key': process.env.INSTAMOJO_KEY , 'X-Auth-Token': process.env.INSTAMOJO_TOKEN}
                 try{
                     let payment_response=  await axios({
                         method:'POST',
@@ -118,6 +120,10 @@ router.post('/add-payment',VerifyToken,async function(request:jwt_request,respon
                 }catch(e){
                     return response.status(501).json({message:e.response.data})
                 }
+                }else{
+                    return response.status(501).json({message:'record already exist'})
+                }
+                
 
             }else{
                 return response.status(501).json({message:'Enter all details'})
