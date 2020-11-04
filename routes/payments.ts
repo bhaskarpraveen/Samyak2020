@@ -132,7 +132,7 @@ router.post('/add-payment',VerifyToken,async function(request:jwt_request,respon
    
 })
 
-router.get('all-payments',VerifyToken,async function(request:jwt_request,response:express.Response){
+router.get('/all-payments',VerifyToken,async function(request:jwt_request,response:express.Response){
     let payments = await Payment.aggregate([
         {
             $lookup:{
