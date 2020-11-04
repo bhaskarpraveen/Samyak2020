@@ -143,6 +143,14 @@ router.get('/all-payments',VerifyToken,async function(request:jwt_request,respon
             }
         },
         {
+            $lookup:{
+                from: 'payment_requests',
+                localField: "payment_request_id",
+                foreignField: "id",
+                as: "payment_request"        
+            }
+        },
+        {
     
         $project:{
             'user.password':0,
