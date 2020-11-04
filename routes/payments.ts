@@ -132,6 +132,27 @@ router.post('/add-payment',VerifyToken,async function(request:jwt_request,respon
    
 })
 
-
+router.get('all-payments',VerifyToken,async function(request:jwt_request,response:express.Response){
+    let payments = await Payment.aggregate([
+        {
+            $lookup:{
+                from: 'users',
+                localField: "user_id",
+                foreignField: "_id",
+                as: "user"        
+            }
+        },
+        {
+    
+        $project:{
+            'user.password':0,
+            'permissions.__v':0,
+            '__v':0,
+            
+        }
+        }
+    ])
+    return response.status(200).json({payments:payments})
+})
 
 export default router;

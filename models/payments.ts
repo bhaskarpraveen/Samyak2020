@@ -12,12 +12,12 @@ interface IPaymentSchema extends Document{
 
 let PaymentSchema = new Schema({
 
-    user_id:mongoose.Schema.Types.ObjectId, 
-    payment_id:String,
-    payment_request_id:String,	
-    status:String,
-    instrument_type: String,
-    billing_instrument: String,
+    user_id:{type:mongoose.Schema.Types.ObjectId,required:true}, 
+    payment_id:{type:String,required:true},
+    payment_request_id:{type:String,required:true},	
+    status:{type:String,required:true},
+    instrument_type: {type:String,required:true},
+    billing_instrument: {type:String,required:true},
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date },
 })
