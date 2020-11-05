@@ -11,17 +11,27 @@ import EventSlot from '../models/event_slots';
 import UserEventBatch from '../models/user_event_batch';
 import csvtojson from 'csvtojson';
 import formatDate from '../services/date_formate';
+import Payment from '../models/payments';
 const router:express.Router = express.Router();
 
-router.post('/event-register',async function(request:express.Request,response:express.Response){
-        const {userId,eventId} = request.body;
+
+//interface 
+interface jwt_request extends express.Request{
+    tokenData?:{userId?:String}
+}
+router.post('/event-register',VerifyToken,async function(request:jwt_request,response:express.Response){
+    if(request.tokenData){
+        const {userId} = request.tokenData;
+        const {eventId} = request.body;
         
         if(userId&&eventId){
             let event = await Event.findOne({_id:eventId});
             if(event){
                 let user = await User.findOne({_id:userId});
                 if(user){
-                    let FindRegistration = await UserEventRegistration.findOne({user_id:userId,event_id:eventId});
+                    let payment = await Payment.findOne({user_id:user._id,status:'Credit'})
+                    if(payment){
+                        let FindRegistration = await UserEventRegistration.findOne({user_id:userId,event_id:eventId});
                     if(!FindRegistration){
                         let new_registration = new UserEventRegistration({
                             user_id:userId,
@@ -37,7 +47,10 @@ router.post('/event-register',async function(request:express.Request,response:ex
                     }else{
                         return response.status(501).json({message:'User already registered'})
                     }
-                  
+                    }else{
+                        return response.status(501).json({message:'user has not payed yet'})
+                    }
+    
                 }else{
                     return response.status(501).json({message:'User not found'})
                 }
@@ -47,6 +60,9 @@ router.post('/event-register',async function(request:express.Request,response:ex
         }else{
             return response.status(501).json({message:'Enter all details'})
         }
+    }else{
+        return response.status(501).json({message:'Token not found'})
+    }
 
 });
 
@@ -100,5 +116,22 @@ router.get('/event-registrations',async function(request:express.Request,respons
     }
 })
 
-
+router.get('/user-events',VerifyToken,async function(request:jwt_request,response:express.Response){
+    if(request.tokenData){
+        const {userId} = request.tokenData;
+        if(userId){
+            const user = User.findOne({_id:userId});
+            if(user){
+                const events = UserEventRegistration.find({user_id:userId})
+                return response.status(200).json(events);
+            }else{
+                return response.status(501).json({message:'User not found'})
+            }
+        }else{
+            return response.status(501).json({message:'Enter valid user id'})
+        }
+    }else{
+        return response.status(501).json({message:'Token not found'})
+    }
+})
 export default router;
