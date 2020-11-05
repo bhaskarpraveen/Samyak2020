@@ -186,6 +186,67 @@ router.post('/delete-talk',VerifyToken,async function(request:jwt_request,respon
     }
 })
 
+
+router.post('/add-csvTalks',VerifyToken,async function(request:jwt_request,response:express.Response){
+    if(request.files){
+        const {newfile} = request.files;
+
+        fs.writeFileSync(__dirname+'/talks.csv',newfile.data);
+        let data = await csvtojson().fromFile(__dirname+'/talks.csv')
+        data.forEach(async talk=>{
+            let findtalk = await TechTalk.findOne({code:talk.code});
+            if(!findtalk){
+    
+                    let newtalk = new TechTalk({
+                        title:talk.title,
+                        speaker:talk.speaker,
+                        speaker_designation:talk.speaker,
+                        description:talk.description,
+                        time:talk.time,
+                        organiser:talk.organiser.trim(),
+                        code:talk.code,
+                    })
+
+                await newtalk.save();
+                    
+            }
+            })
+            fs.unlinkSync(__dirname+'/talks.csv');
+            return response.status(200).json({message:'successfull'})
+ 
+    }else{
+        return response.status(501).json({message:'Not added'})
+    }
+  
+})
+
+router.post('/edit-csvTalks',VerifyToken,VerifyUserRole({collection:'Events',permission:'edit'}),async function(request:jwt_request,response:express.Response){
+    if(request.files){
+        const {newfile} = request.files;
+
+        fs.writeFileSync(__dirname+'/talks.csv',newfile.data);
+        let data = await csvtojson().fromFile(__dirname+'/talks.csv')
+        data.forEach(async talk=>{
+           let newevent =  await Event.updateOne({code:talk.code},{$set:{
+            title:talk.title,
+            speaker:talk.speaker,
+            speaker_designation:talk.speaker,
+            description:talk.description,
+            time:talk.time,
+            organiser:talk.organiser.trim(),
+            code:talk.code,
+            }},{ upsert: false })
+        })
+        fs.unlinkSync(__dirname+'/talks.csv');
+        return response.status(200).json({message:'successfull'})
+    }
+  
+});
+
+
+
+
+
 //Returns all tech talks for website
 router.get('/get-talks',async function(request:express.Request,response:express.Response){
     let talks = await TechTalk.find({})
