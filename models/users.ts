@@ -4,7 +4,7 @@ import generateSamyakId from '../services/samyak_id_generation';
 
 //schema fields and methods
 interface IUser extends Document{
-    samyak_id: number,
+    samyak_id: String,
     name:string,
     password:string,
     email:string,

@@ -245,7 +245,7 @@ router.get('/all-events',VerifyToken,async function(request:jwt_request,response
 })
 
 //delete an event
-router.post('/delete-event',VerifyToken,VerifyUserRole({collection:'Events',permission:'delete'}),async function(request:express.Request,response:express.Response){
+router.post('/delete-event',VerifyToken,VerifyUserRole({collection:'Events',permission:'delete'}),async function(request:jwt_request,response:express.Response){
     const {eventId} = request.body;
     if(eventId){
         let FindEvent = await Event.findOne({_id:eventId});
@@ -268,7 +268,7 @@ router.post('/delete-event',VerifyToken,VerifyUserRole({collection:'Events',perm
 })
 
 //Edit an event
-router.post('/edit-event',VerifyToken,VerifyUserRole({collection:'Events',permission:'edit'}),async function(request:express.Request,response:express.Response){
+router.post('/edit-event',VerifyToken,VerifyUserRole({collection:'Events',permission:'edit'}),async function(request:jwt_request,response:express.Response){
     const { 
         eventId,
         name,
@@ -321,7 +321,7 @@ router.post('/edit-event',VerifyToken,VerifyUserRole({collection:'Events',permis
 
 })
 
-router.post('/add-csvEvents',VerifyToken,VerifyUserRole({collection:'Events',permission:'add'}),async function(request:express.Request,response:express.Response){
+router.post('/add-csvEvents',VerifyToken,VerifyUserRole({collection:'Events',permission:'add'}),async function(request:jwt_request,response:express.Response){
     if(request.files){
         const {newfile} = request.files;
 
@@ -358,7 +358,7 @@ router.post('/add-csvEvents',VerifyToken,VerifyUserRole({collection:'Events',per
   
 })
 
-router.post('/edit-csvEvents',VerifyToken,VerifyUserRole({collection:'Events',permission:'edit'}),async function(request:express.Request,response:express.Response){
+router.post('/edit-csvEvents',VerifyToken,VerifyUserRole({collection:'Events',permission:'edit'}),async function(request:jwt_request,response:express.Response){
     if(request.files){
         const {newfile} = request.files;
 

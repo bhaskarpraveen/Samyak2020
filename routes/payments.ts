@@ -20,8 +20,9 @@ router.get('/create-request',VerifyToken,async function(request:jwt_request,resp
         const {userId} = request.tokenData;
         const user = await User.findOne({_id:userId})
         if(user){
-             
-            let headers = { 'X-Api-Key': process.env.INSTAMOJO_KEY , 'X-Auth-Token': process.env.INSTAMOJO_TOKEN}
+             const FindPayment = await Payment.findOne({user_id:user._id,status:'Credit'})
+             if(!FindPayment){
+                let headers = { 'X-Api-Key': process.env.INSTAMOJO_KEY , 'X-Auth-Token': process.env.INSTAMOJO_TOKEN}
             const payload = {
             purpose: 'Samyak 2020 registration',
             amount: '25',
@@ -74,6 +75,10 @@ router.get('/create-request',VerifyToken,async function(request:jwt_request,resp
             console.log(e.response.data)
             return response.status(501).json({message:e.response.data})
         }
+             }else{
+                 return response.status(501).json({message:'User already payed'})
+             }
+            
        
         }else{
             return response.status(501).json({message:'user not found'})
