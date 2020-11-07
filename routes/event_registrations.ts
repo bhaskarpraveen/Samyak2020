@@ -120,9 +120,9 @@ router.get('/user-events',VerifyToken,async function(request:jwt_request,respons
     if(request.tokenData){
         const {userId} = request.tokenData;
         if(userId){
-            const user = User.findOne({_id:userId});
+            const user = await User.findOne({_id:userId});
             if(user){
-                const events = UserEventRegistration.aggregate([
+                const events = await UserEventRegistration.aggregate([
                     {
                         $match:{user_id:userId}
                     },
