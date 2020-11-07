@@ -122,21 +122,21 @@ router.get('/user-events',VerifyToken,async function(request:jwt_request,respons
         if(userId){
             const user = await User.findOne({_id:userId});
             if(user){
-                const events = await UserEventRegistration.aggregate([
-                    {
-                        $match:{user_id:userId}
-                    },
+                let events = await UserEventRegistration.aggregate([
+                    // {
+                    //     $match:{user_id:user._id}
+                    // },
                     {
                         $lookup:{
                             from: 'events',
                             localField: "event_id",
                             foreignField: "_id",
-                            as: "events"        
+                            as: "all_events"        
                         }
                     },
                 ])
-
-                return response.status(200).json(events);
+                let user_events = events.find(event=>event.user_id==user._id)
+                return response.status(200).json(user_events);
             }else{
                 return response.status(501).json({message:'User not found'})
             }
