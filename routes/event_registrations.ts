@@ -139,5 +139,38 @@ router.get('/user-events',VerifyToken,async function(request:jwt_request,respons
     }else{
         return response.status(501).json({message:'Token not found'})
     }
+});
+
+
+
+router.post('/event-unregister',VerifyToken,async function(request:jwt_request,response:express.Response){
+    if(request.tokenData){
+        const {userId} = request.tokenData;
+        const {eventId} = request.body;
+        
+        if(userId&&eventId){
+            let event = await Event.findOne({_id:eventId});
+            if(event){
+                let user = await User.findOne({_id:userId});
+                if(user){
+                    let promise = UserEventRegistration.deleteOne({user_id:user._id,event_id:event._id});
+                    promise.then(()=>{
+                        return response.status(200).json({message:'unregistered successfully'});
+                    })
+                    promise.catch(err=>{
+                        return response.status(501).json({message:err.message})
+                    })
+                }else{
+                    return response.status(501).json({message:'User not found'})
+                }
+            }else{
+                return response.status(501).json({message:'Event not found'})
+            }
+        }else{
+            return response.status(501).json({message:'Enter all details'})
+        }
+    }else{
+        return response.status(501).json({message:'Token not found'})
+    }
 })
 export default router;
