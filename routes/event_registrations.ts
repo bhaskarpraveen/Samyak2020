@@ -125,7 +125,7 @@ router.get('/user-events',VerifyToken,async function(request:jwt_request,respons
                 let events = await UserEventRegistration.find({user_id:user._id})
                 let event_obj=[]
                 for(let i=0;i<events.length;i++){
-                    let temp_event = await Event.find({_id:events[i].event_id})
+                    let temp_event = await Event.findOne({_id:events[i].event_id})
                     event_obj.push(temp_event);
                 }
 
