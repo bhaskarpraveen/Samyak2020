@@ -153,13 +153,13 @@ router.post('/event-unregister',VerifyToken,async function(request:jwt_request,r
             if(event){
                 let user = await User.findOne({_id:userId});
                 if(user){
-                    let promise = UserEventRegistration.deleteOne({user_id:user._id,event_id:event._id});
-                    promise.then(()=>{
-                        return response.status(200).json({message:'unregistered successfully'});
-                    })
-                    promise.catch(err=>{
+                    try{
+                        await UserEventRegistration.deleteOne({user_id:user._id,event_id:event._id});
+                    await UserEventBatch.deleteOne({user_id:user._id,event_id:event._id})
+                    return response.status(200).json({message:'unregistered successfully'});
+                    }catch(err){
                         return response.status(501).json({message:err.message})
-                    })
+                    }
                 }else{
                     return response.status(501).json({message:'User not found'})
                 }
