@@ -14,7 +14,7 @@ interface jwt_request extends express.Request{
 }
 
 router.get('/check-token',VerifyToken,async function(request:jwt_request,response:express.Response){
-    return response.status(200).json({message:'Authorization failed',authorized:true})
+    return response.status(200).json({message:'Authorization granted',authorized:true})
 })
 
 //Creating a new user record
