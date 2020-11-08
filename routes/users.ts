@@ -8,9 +8,14 @@ import VerifyToken from '../middlewares/verify_token';
 const JWT_KEY =  process.env.JWT_KEY ||'jsonwebtoken'
 
 
+//interface 
+interface jwt_request extends express.Request{
+    tokenData?:{userId?:String}
+}
 
-
-
+router.get('/check-token',VerifyToken,async function(request:jwt_request,response:express.Response){
+    return response.status(200).json({message:'Authorization failed',authorized:true})
+})
 
 //Creating a new user record
 router.post('/register',async function(request:express.Request,response:express.Response){
@@ -191,19 +196,19 @@ router.post('/forgot-password',async function(request:express.Request,response:e
 
 
 
-router.post('/check-token',async function(request:express.Request,response:express.Response){
-    const {token} = request.body;
+// router.post('/check-token',async function(request:express.Request,response:express.Response){
+//     const {token} = request.body;
 
-    jwt.verify(token,JWT_KEY,function(err: any,data: { userId?: String | undefined; } | undefined){
-        if(err){
-            return response.status(400).json(false)
-        }
-        else if(data){
-            return response.status(200).json(true)
+//     jwt.verify(token,JWT_KEY,function(err: any,data: { userId?: String | undefined; } | undefined){
+//         if(err){
+//             return response.status(400).json(false)
+//         }
+//         else if(data){
+//             return response.status(200).json(true)
             
-        }
-    })
-})
+//         }
+//     })
+// })
 
 router.post('/change-password',async function(request:express.Request,response:express.Response){
     
@@ -239,11 +244,6 @@ router.post('/change-password',async function(request:express.Request,response:e
                   
         }else{
             return response.status(501).json({message:'Enter valid details'})
-        }
-        
-    
-    
-    
-   
+        }  
 })
 export default router;
