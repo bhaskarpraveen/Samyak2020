@@ -13,8 +13,19 @@ interface jwt_request extends express.Request{
     tokenData?:{userId?:String}
 }
 
-router.get('/check-token',VerifyToken,async function(request:jwt_request,response:express.Response){
-    return response.status(200).json({message:'Authorization granted',authorized:true})
+router.get('/check-token',async function(request:express.Request,response:express.Response){
+    const token:string = String(request.headers['x-access-token']);
+
+    jwt.verify(token,JWT_KEY,function(err,data){
+        if(err){
+            return response.status(200).json(false)
+        }
+        else if(data){
+            return response.status(200).json(true)
+           
+        }
+    })
+    
 })
 
 //Creating a new user record

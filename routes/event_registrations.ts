@@ -12,6 +12,7 @@ import UserEventBatch from '../models/user_event_batch';
 import csvtojson from 'csvtojson';
 import formatDate from '../services/date_formate';
 import Payment from '../models/payments';
+import checkSlots from '../services/check_slots';
 const router:express.Router = express.Router();
 
 
@@ -33,17 +34,23 @@ router.post('/event-register',VerifyToken,async function(request:jwt_request,res
                     if(payment){
                         let FindRegistration = await UserEventRegistration.findOne({user_id:userId,event_id:eventId});
                     if(!FindRegistration){
-                        let new_registration = new UserEventRegistration({
-                            user_id:userId,
-                            event_id:eventId
-                        });
-                        let promise = new_registration.save();
-                        promise.then(doc=>{
-                            return response.status(200).json({message:'succesfully added',doc:doc})
-                        })
-                        promise.catch(err=>{
-                            return response.status(501).json({message:err.message})
-                        })
+                        let check = await checkSlots(user,event);
+                        if(check){
+                            let new_registration = new UserEventRegistration({
+                                user_id:userId,
+                                event_id:eventId
+                            });
+                            let promise = new_registration.save();
+                            promise.then(doc=>{
+                                return response.status(200).json({message:'succesfully added',doc:doc})
+                            })
+                            promise.catch(err=>{
+                                return response.status(501).json({message:err.message})
+                            })
+                        }else{
+                            return response.status(501).json({message:'User has already registered to another slot in the timing'})
+                        }
+                        
                     }else{
                         return response.status(501).json({message:'User already registered'})
                     }

@@ -6,7 +6,7 @@ interface IEvent extends Document{
     department:String,
     organiser:String,
     description:String,
-    multiple_events_allowed:Boolean,
+    // multiple_events_allowed:Boolean,
     status:Number,
     created_at:Date
     updated_at?:Date,
@@ -23,7 +23,7 @@ let EventSchema = new Schema({
     department:{type:String,required:true},
     organiser:{type:String,required:true},
     description:{type:String,required:true},
-    multiple_events_allowed:{type:Number,default:1},
+    // multiple_events_allowed:{type:Number,default:1},
     status:{type:Number,default:1},
     created_at:{type:Date,default:Date.now},
     updated_at:{type:Date},

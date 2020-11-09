@@ -121,7 +121,7 @@ router.post('/add-event',VerifyToken,VerifyUserRole({collection:'Events',permiss
     department,
     organiser,
     description,
-    multiple_events_allowed,
+    // multiple_events_allowed,
     venue,
     type,
     code,
@@ -130,7 +130,7 @@ router.post('/add-event',VerifyToken,VerifyUserRole({collection:'Events',permiss
     image
     } = request.body;
 
-    if(name&&department&&description&&multiple_events_allowed&&type&&code){
+    if(name&&department&&description&&type&&code){
         let FindEvent = await Event.findOne({$or:[{name:name},{code:code}]});
         if(!FindEvent){
             if(mongoose.Types.ObjectId.isValid(type)){
@@ -143,7 +143,7 @@ router.post('/add-event',VerifyToken,VerifyUserRole({collection:'Events',permiss
                     department:department,
                     organiser:organiser.trim(),
                     description:description,
-                    multiple_events_allowed:multiple_events_allowed,
+                    // multiple_events_allowed:multiple_events_allowed,
                     venue:venue,
                     type:type,
                     code:code,
@@ -275,7 +275,7 @@ router.post('/edit-event',VerifyToken,VerifyUserRole({collection:'Events',permis
         department,
         organiser,
         description,
-        multiple_events_allowed,
+        // multiple_events_allowed,
         venue,
         type,
         code,
@@ -284,7 +284,7 @@ router.post('/edit-event',VerifyToken,VerifyUserRole({collection:'Events',permis
         image,
         } = request.body;
 
-        if(eventId&&name&&department&&description&&multiple_events_allowed&&type&&code){
+        if(eventId&&name&&department&&description&&type&&code){
             let FindEvent = await Event.findOne({_id:eventId});
             if(FindEvent){
                 let FindEventType = await EventType.findOne({_id:type});
@@ -294,7 +294,7 @@ router.post('/edit-event',VerifyToken,VerifyUserRole({collection:'Events',permis
                     department:department,
                     organiser:organiser.trim(),
                     description:description,
-                    multiple_events_allowed:multiple_events_allowed,
+                    // multiple_events_allowed:multiple_events_allowed,
                     venue:venue,
                     type:type,
                     code:code,
@@ -337,7 +337,7 @@ router.post('/add-csvEvents',VerifyToken,VerifyUserRole({collection:'Events',per
                         department:event.department,
                         organiser:event.organiser.trim(),
                         description:event.description,
-                        multiple_events_allowed:event.multiple_events_allowed,
+                        // multiple_events_allowed:event.multiple_events_allowed,
                         venue:event.venue,
                         type:findType._id,
                         code:event.code,
@@ -371,7 +371,7 @@ router.post('/edit-csvEvents',VerifyToken,VerifyUserRole({collection:'Events',pe
                     department:event.department,
                     organiser:event.organiser.trim(),
                     description:event.description,
-                    multiple_events_allowed:event.multiple_events_allowed,
+                    // multiple_events_allowed:event.multiple_events_allowed,
                     venue:event.venue,
                     type:event.type,
                     code:event.code,
