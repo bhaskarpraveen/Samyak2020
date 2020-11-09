@@ -5,7 +5,7 @@ interface IEvent extends Document{
     name:String,
     department:String,
     organiser:String,
-    description:String,
+    description:Schema.Types.ObjectId,
     // multiple_events_allowed:Boolean,
     status:Number,
     created_at:Date
@@ -13,7 +13,7 @@ interface IEvent extends Document{
     venue?:String,
     registration_price?:Number,
     type:Schema.Types.ObjectId,
-    image?:String
+    image?:String,
     code:String,
     faculty_organiser?:String,
     faculty_contact?:String
@@ -22,7 +22,7 @@ let EventSchema = new Schema({
     name:{type:String,required:true},
     department:{type:String,required:true},
     organiser:{type:String,required:true},
-    description:{type:String,required:true},
+    description:{type:Schema.Types.ObjectId,required:true},
     // multiple_events_allowed:{type:Number,default:1},
     status:{type:Number,default:1},
     created_at:{type:Date,default:Date.now},
