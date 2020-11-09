@@ -51,10 +51,7 @@ router.get('/all-eventTypes',VerifyToken,VerifyUserRole({collection:'Events',per
     let eventTypes = await EventType.find({})
     return response.status(200).json(eventTypes)
 })
-async function getDepartmentName(department:any){
-    let temp=await Department.findOne({_id:department})
-    return temp?.name
-}
+
 //Formatted event types and departments for home page
 router.get('/event-types',async function(request:express.Request,response:express.Response){
     let eventTypes = await EventType.find({})
@@ -62,11 +59,10 @@ router.get('/event-types',async function(request:express.Request,response:expres
     for(let i=0;i<eventTypes.length;i++){
         if(eventTypes[i].name=='Technical'){
             let department = await Event.find({type:eventTypes[i]._id}).distinct('department')
-            let tmp_array=[]
+            let tmp_array:any=[]
             for(let i=0;i<department.length;i++){
-                tmp_array.push(getDepartmentName(department))
-	console.log(tmp_array)
-console.log(department[i])
+                let dep_name = await Department.findOne({_id:department[i]})
+                tmp_array.push(dep_name)
             }
         records.push({type:eventTypes[i].name,departments:tmp_array})
         }else{
