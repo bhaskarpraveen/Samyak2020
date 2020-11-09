@@ -308,7 +308,7 @@ router.post('/edit-event',VerifyToken,VerifyUserRole({collection:'Events',permis
                     if(findDepartment){
                         let promise = Event.updateOne({_id:eventId},{$set:{
                             name:name,
-                            department:department,
+                            department:findDepartment._id,
                             organiser:organiser.trim(),
                             description:description,
                             // multiple_events_allowed:multiple_events_allowed,
@@ -394,7 +394,7 @@ router.post('/edit-csvEvents',VerifyToken,VerifyUserRole({collection:'Events',pe
             if(findDepartment){
                 let newevent =  await Event.updateOne({code:event.code},{$set:{
                     name:event.name,
-                        department:event.department,
+                        department:findDepartment._id,
                         organiser:event.organiser.trim(),
                         description:event.description,
                         // multiple_events_allowed:event.multiple_events_allowed,
