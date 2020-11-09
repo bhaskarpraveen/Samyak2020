@@ -439,9 +439,10 @@ router.get('/get-events',async function(request:express.Request,response:express
                 ])
                 return response.status(200).json({events:all_events})
             }else{
+                let dept = await Department.findOne({name:String(event_department)})
                let  events = await Event.aggregate([
                     {
-                        $match:{type:type._id,department:event_department}
+                        $match:{type:type._id,department:dept?._id}
                     },
                     {
                         $lookup:{
