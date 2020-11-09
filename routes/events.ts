@@ -9,6 +9,7 @@ import UserRole from '../models/user_roles';
 import Role from '../models/roles';
 import fs from 'fs';
 import csvtojson from 'csvtojson';
+import Department from '../models/departments';
 import EventSlot from '../models/event_slots';
 const router:express.Router = express.Router();
 
@@ -136,31 +137,36 @@ router.post('/add-event',VerifyToken,VerifyUserRole({collection:'Events',permiss
             if(mongoose.Types.ObjectId.isValid(type)){
                 let FindEventType = await EventType.findOne({_id:type});
             if(FindEventType){
-               
-            
-                let event = new Event({
-                    name:name,
-                    department:department,
-                    organiser:organiser.trim(),
-                    description:description,
-                    // multiple_events_allowed:multiple_events_allowed,
-                    venue:venue,
-                    type:type,
-                    code:code,
-                    faculty_organiser:faculty_organiser || '-',
-                    faculty_contact:faculty_contact|| '-',
-                    image:image
-                })
-
-                let promise = event.save();
-                promise.then(doc=>{
-                    
-                    return response.status(200).json({message:'Successfully added',doc:doc})
-                });
+               let findDepartment = await Department.findOne({name:department})
+                if(findDepartment){
+                    let event = new Event({
+                        name:name,
+                        department:findDepartment._id,
+                        organiser:organiser.trim(),
+                        description:description,
+                        // multiple_events_allowed:multiple_events_allowed,
+                        venue:venue,
+                        type:type,
+                        code:code,
+                        faculty_organiser:faculty_organiser || '-',
+                        faculty_contact:faculty_contact|| '-',
+                        image:image
+                    })
     
-                promise.catch(err=>{
-                    return response.status(501).json({message:err.message})
-                })
+                    let promise = event.save();
+                    promise.then(doc=>{
+                        
+                        return response.status(200).json({message:'Successfully added',doc:doc})
+                    });
+        
+                    promise.catch(err=>{
+                        return response.status(501).json({message:err.message})
+                    })
+
+                }else{
+                    return response.status(501).json({message:'Department not found'})
+                }
+                
             }else{
                 return response.status(501).json({message:'Invalid Event type'})
             }
@@ -202,6 +208,7 @@ router.get('/all-events',VerifyToken,async function(request:jwt_request,response
                             as: "permissions"        
                         }
                     },
+                   
                     {
                 
                     $project:{
@@ -224,11 +231,19 @@ router.get('/all-events',VerifyToken,async function(request:jwt_request,response
                         }
                     },
                     {
+                        $lookup:{
+                            from: 'departments',
+                            localField: "department",
+                            foreignField: "_id",
+                            as: "department"        
+                        }
+                    },
+                    {
                 
                     $project:{
                         '__v':0,
                         'type.__v':0,
-                        
+                        'department.__v':0
                     }
                     }
                 ])
@@ -289,25 +304,31 @@ router.post('/edit-event',VerifyToken,VerifyUserRole({collection:'Events',permis
             if(FindEvent){
                 let FindEventType = await EventType.findOne({_id:type});
                 if(FindEventType){
-                let promise = Event.updateOne({_id:eventId},{$set:{
-                    name:name,
-                    department:department,
-                    organiser:organiser.trim(),
-                    description:description,
-                    // multiple_events_allowed:multiple_events_allowed,
-                    venue:venue,
-                    type:type,
-                    code:code,
-                    faculty_organiser:faculty_organiser ||'-',
-                    faculty_contact:faculty_contact||'-',
-                    image:image
-                }}) ;
-                promise.then(doc=>{
-                    return response.status(200).json({message:'Successfully updated',response:doc})
-                })
-                promise.catch(err=>{
-                    return response.status(501).json({message:err.message})
-                })
+                    let findDepartment = await Department.findOne({name:department});
+                    if(findDepartment){
+                        let promise = Event.updateOne({_id:eventId},{$set:{
+                            name:name,
+                            department:department,
+                            organiser:organiser.trim(),
+                            description:description,
+                            // multiple_events_allowed:multiple_events_allowed,
+                            venue:venue,
+                            type:type,
+                            code:code,
+                            faculty_organiser:faculty_organiser ||'-',
+                            faculty_contact:faculty_contact||'-',
+                            image:image
+                        }}) ;
+                        promise.then(doc=>{
+                            return response.status(200).json({message:'Successfully updated',response:doc})
+                        })
+                        promise.catch(err=>{
+                            return response.status(501).json({message:err.message})
+                        })
+                    }else{
+                        return response.status(501).json({message:'Invalid department'})
+                    }
+                
             }else{
                 return response.status(501).json({message:'Invalid Event type'})
             }
@@ -332,20 +353,23 @@ router.post('/add-csvEvents',VerifyToken,VerifyUserRole({collection:'Events',per
             if(!findEvent){
                 let findType = await EventType.findOne({name:event.type})
                 if(findType){
-                    let newevent = new Event({
-                        name:event.name,
-                        department:event.department,
-                        organiser:event.organiser.trim(),
-                        description:event.description,
-                        // multiple_events_allowed:event.multiple_events_allowed,
-                        venue:event.venue,
-                        type:findType._id,
-                        code:event.code,
-                        faculty_organiser:event.faculty_organiser||'-',
-                        faculty_contact:event.faculty_contact||'-'
-                    })
-
-                await newevent.save();
+                    let findDepartment = await Department.findOne({name:event.department});
+                    if(findDepartment){
+                        let newevent = new Event({
+                            name:event.name,
+                            department:findDepartment._id,
+                            organiser:event.organiser.trim(),
+                            description:event.description,
+                            // multiple_events_allowed:event.multiple_events_allowed,
+                            venue:event.venue,
+                            type:findType._id,
+                            code:event.code,
+                            faculty_organiser:event.faculty_organiser||'-',
+                            faculty_contact:event.faculty_contact||'-'
+                        })
+    
+                    await newevent.save();
+                    }
                 }      
             }
             })
@@ -366,18 +390,22 @@ router.post('/edit-csvEvents',VerifyToken,VerifyUserRole({collection:'Events',pe
         let data = await csvtojson().fromFile(__dirname+'/events.csv')
         response.send(data)
         data.forEach(async event=>{
-           let newevent =  await Event.updateOne({code:event.code},{$set:{
-                name:event.name,
-                    department:event.department,
-                    organiser:event.organiser.trim(),
-                    description:event.description,
-                    // multiple_events_allowed:event.multiple_events_allowed,
-                    venue:event.venue,
-                    type:event.type,
-                    code:event.code,
-                    faculty_organiser:event.faculty_organiser||'-',
-                    faculty_contact:event.faculty_contact||'-'
-            }},{ upsert: false })
+            let findDepartment = await Department.findOne({name:event.department});
+            if(findDepartment){
+                let newevent =  await Event.updateOne({code:event.code},{$set:{
+                    name:event.name,
+                        department:event.department,
+                        organiser:event.organiser.trim(),
+                        description:event.description,
+                        // multiple_events_allowed:event.multiple_events_allowed,
+                        venue:event.venue,
+                        type:event.type,
+                        code:event.code,
+                        faculty_organiser:event.faculty_organiser||'-',
+                        faculty_contact:event.faculty_contact||'-'
+                }},{ upsert: false })
+            }
+         
         })
         fs.unlinkSync(__dirname+'/events.csv');
         return response.status(200).json({message:'successfull'})
@@ -391,12 +419,40 @@ router.get('/get-events',async function(request:express.Request,response:express
     const {event_department,event_type} = request.query;
     if(event_department&&event_type){
         let type = await EventType.findOne({name:String(event_type)});
+         
         if(type){
+          
             if(event_department=='all'){
-                let events = await Event.find({type:type._id});
-                return response.status(200).json({events:events})
+                // await Event.find({type:type._id});
+                let all_events = await Event.aggregate([
+                    {
+                        $match:{type:type._id}
+                    },
+                    {
+                        $lookup:{
+                            from: 'departments',
+                            localField: "department",
+                            foreignField: "_id",
+                            as: "department"        
+                        }
+                    },
+                ])
+                return response.status(200).json({events:all_events})
             }else{
-                let events = await Event.find({type:type._id,department:String(event_department)});
+               let  events = await Event.aggregate([
+                    {
+                        $match:{type:type._id,department:event_department}
+                    },
+                    {
+                        $lookup:{
+                            from: 'departments',
+                            localField: "department",
+                            foreignField: "_id",
+                            as: "department"        
+                        }
+                    },
+                ])
+    
                 return response.status(200).json({events:events})
             }
            
@@ -408,5 +464,81 @@ router.get('/get-events',async function(request:express.Request,response:express
     }
 })
 
+router.post('/add-department',VerifyToken,async function(request:jwt_request,response:express.Response){
+    const {name} = request.body;
+    if(name){
+        const findDepartment = await Department.findOne({name:name});
+        if(!findDepartment){
+            let department = new Department({
+                name:name.trim()
+            });
+            let promise = department.save()
+            promise.then(doc=>{
+                return response.status(200).json({message:'Successfully added',doc:doc})
+            });
 
+            promise.catch(err=>{
+                return response.status(501).json({message:err.message})
+            })
+        }else{
+            return response.status(501).json({message:'Department already found'})
+        }
+    }else{
+        return response.status(501).json({message:'Enter valid department name'})
+    }
+});
+
+
+router.post('/edit-department',VerifyToken,async function(request:jwt_request,response:express.Response){
+    const {departmentId,name} = request.body;
+    if(name&&departmentId){
+        const findDepartment = await Department.findOne({_id:departmentId});
+        if(findDepartment){
+          
+            let promise = Department.updateOne({_id:departmentId},{$set:{name:name}})
+            promise.then(doc=>{
+                return response.status(200).json({message:'Successfully updated',doc:doc})
+            });
+
+            promise.catch(err=>{
+                return response.status(501).json({message:err.message})
+            })
+        }else{
+            return response.status(501).json({message:'Department not found'})
+        }
+    }else{
+        return response.status(501).json({message:'Enter valid department name'})
+    }
+});
+
+
+
+router.post('/delete-department',VerifyToken,VerifyUserRole({collection:'Events',permission:'delete'}),async function(request:jwt_request,response:express.Response){
+    const {departmentId} = request.body;
+    if(departmentId){
+        let FindDepartment = await Department.findOne({_id:departmentId});
+        if(FindDepartment){
+        let code = FindDepartment._id
+            let promise = Department.deleteOne({_id:departmentId});
+            promise.then(async()=>{
+                await Event.deleteMany({department:code});
+                return response.status(200).json({message:'Successfully deleted'})
+            })
+            promise.catch(err=>{
+                return response.status(501).json({message:err.message})
+            })
+        }else{
+            return response.status(501).json({message:'Event not found'})
+        }
+    }else{
+        return response.status(501).json({message:'Enter valid Details'})
+    }
+});
+
+
+
+router.get('/all-departments',VerifyToken,async function(request:jwt_request,response:express.Response){
+    let departments = await Department.find({});
+    return response.status(200).json(departments)
+})
 export default router;
