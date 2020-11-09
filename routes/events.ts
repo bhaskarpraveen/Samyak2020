@@ -59,6 +59,10 @@ router.get('/event-types',async function(request:express.Request,response:expres
     for(let i=0;i<eventTypes.length;i++){
         if(eventTypes[i].name=='Technical'){
             let department = await Event.find({type:eventTypes[i]._id}).distinct('department')
+            department.map(async dep=>{
+                let temp=await Department.findOne({_id:dep.department})
+                dep =temp?.name
+            })
         records.push({type:eventTypes[i].name,departments:department})
         }else{
             records.push({type:eventTypes[i].name})
