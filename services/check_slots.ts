@@ -35,7 +35,7 @@ let checkSlots =async function(user:any,event:any){
                 console.log('current_slot_start:'+current_slot_start)
                 console.log('current_slot_end:'+current_slot_end)
                 for(let j=0;j<registered_slots.length;j++){
-                   
+                
                         if(!registered_slots[j].multiple_events_allowed){
     
                             let registered_slot_start = registered_slots[j].date;
@@ -44,7 +44,8 @@ let checkSlots =async function(user:any,event:any){
                             let registered_slot_end = registered_slots[j].date;
                             registered_slot_end.setHours(Number(registered_slots[j].end_time.split(":")[0]))
                             registered_slot_end.setMinutes(Number(registered_slots[j].end_time.split(":")[1]))
-
+                            console.log('registered_slot_start'+registered_slot_start)
+                            console.log('registered_slot_end'+registered_slot_end)
                           if((current_slot_start>=registered_slot_start&&current_slot_start<registered_slot_end)||(current_slot_end>registered_slot_start&&current_slot_end<registered_slot_end)){
                               console.log('false returned')
                               check=0;
