@@ -10,7 +10,7 @@ const router:express.Router = express.Router();
 
 router.post('/add',VerifyToken,VerifyUserRole({collection:'Events',permission:'manage_batches'}),async function(request:express.Request,response:express.Response){
     const {name,meet_link,eventId,date,start_time,end_time, multiple_events_allowed} = request.body;
-    if(name&&meet_link&&eventId&&date&&start_time&&end_time&& multiple_events_allowed){
+    if(name&&meet_link&&eventId&&date&&start_time&&end_time&&( multiple_events_allowed!=null)){
         let findEvent = await Event.findOne({_id:eventId});
         if(findEvent){
             let findSlot = await EventSlot.findOne({name:name,event_id:findEvent._id});
