@@ -14,10 +14,14 @@ let checkSlots =async function(user:any,event:any){
       console.log({event_slots})
       if(!event_slots) return true;
       //slots of the user already registered
-        let registered_slots =[];
+        let registered_slots:any =[];
         for(let i=0;i<registered_events.length;i++){
-            let slots = await EventSlot.findOne({event_id:registered_events[i].event_id}); //replace event with registered_events[i]
-            if(slots) registered_slots.push(slots)
+            let slots = await EventSlot.find({event_id:registered_events[i].event_id}); //replace event with registered_events[i]
+            if(slots) slots.forEach(slot=>{
+                registered_slots.push(slot)
+            })
+            
+        
         }
 
         console.log({registered_slots})
