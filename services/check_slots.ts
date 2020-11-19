@@ -27,13 +27,12 @@ let checkSlots =async function(user:any,event:any){
             if(!event_slots[i].multiple_events_allowed){
 
                 let current_slot_start = event_slots[i].date;
-                current_slot_start.setHours(Number(event_slots[i].start_time.split(":")[0]))
-                current_slot_start.setMinutes(Number(event_slots[i].start_time.split(":")[1]))
+                current_slot_start.setHours(Number(event_slots[i].start_time.split(":")[0]),Number(event_slots[i].start_time.split(":")[1]),0)
+               
                 let current_slot_end = event_slots[i].date;
-                current_slot_end.setHours(Number(event_slots[i].end_time.split(":")[0]))
-                current_slot_end.setMinutes(Number(event_slots[i].end_time.split(":")[1]))
-                console.log('Hrs:'+Number(event_slots[i].start_time.split(":")[0]))
-                console.log('Mns:'+Number(event_slots[i].start_time.split(":")[1]))
+                current_slot_end.setHours(Number(event_slots[i].end_time.split(":")[0]),Number(event_slots[i].end_time.split(":")[1]),0)
+                
+               
                 console.log({current_slot_start})
                 console.log({current_slot_end})
                 for(let j=0;j<registered_slots.length;j++){
@@ -41,11 +40,11 @@ let checkSlots =async function(user:any,event:any){
                         if(!registered_slots[j].multiple_events_allowed){
     
                             let registered_slot_start = registered_slots[j].date;
-                            registered_slot_start.setHours(Number(registered_slots[j].start_time.split(":")[0]))
-                            registered_slot_start.setMinutes(Number(registered_slots[j].start_time.split(":")[1]))
+                            registered_slot_start.setHours(Number(registered_slots[j].start_time.split(":")[0]),Number(registered_slots[j].start_time.split(":")[1]),0)
+                          
                             let registered_slot_end = registered_slots[j].date;
-                            registered_slot_end.setHours(Number(registered_slots[j].end_time.split(":")[0]))
-                            registered_slot_end.setMinutes(Number(registered_slots[j].end_time.split(":")[1]))
+                            registered_slot_end.setHours(Number(registered_slots[j].end_time.split(":")[0]),Number(registered_slots[j].end_time.split(":")[1]),0)
+
                             console.log({registered_slot_start})
                             console.log({registered_slot_end})
                            
