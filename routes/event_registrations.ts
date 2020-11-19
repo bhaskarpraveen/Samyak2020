@@ -35,6 +35,7 @@ router.post('/event-register',VerifyToken,async function(request:jwt_request,res
                         let FindRegistration = await UserEventRegistration.findOne({user_id:userId,event_id:eventId});
                     if(!FindRegistration){
                         let check = await checkSlots(user,event);
+                        console.log(check)
                         if(check){
                             let new_registration = new UserEventRegistration({
                                 user_id:userId,
