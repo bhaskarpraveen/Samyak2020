@@ -7,7 +7,7 @@ let checkSlots =async function(user:any,event:any){
     //all registerd events of the user
     let registered_events = await UserEventRegistration.find({user_id:user._id}) 
     console.log({registered_events})
-    if(!registered_events)return true;
+    if(registered_events==[])return true;
     else{
         //slots of the event user currently trying to register
       let event_slots = await EventSlot.find({event_id:event._id})
