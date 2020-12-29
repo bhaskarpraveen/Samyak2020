@@ -27,7 +27,7 @@ let emailVerification = async function(email:string){
             name:user.name,
             token:token
         },
-        from:'praveennaidu264@gmail.com',
+        from:'notification@klsamyak.in',
         to:email,
         subject:'Email confirmation'
     }
