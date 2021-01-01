@@ -44,18 +44,25 @@ let checkSlots =async function(user:any,event:any){
                
                 console.log({current_slot_start,s_hr,s_min})
                 console.log({current_slot_end,e_hr,e_min})
+
+                // let slot_date = event_slots[i].date
+                // let start_hour = Number(event_slots[i].start_time.split(":")[0])
+                // let start_min =  Number(event_slots[i].start_time.split(":")[1])
+                // let end_hour = Number(event_slots[i].end_time.split(":")[0])
+                // let end_min = Number(event_slots[i].end_time.split(":")[1])
+
                 for(let j=0;j<registered_slots.length;j++){
                 console.log({registered_slots})
                         if(!registered_slots[j].multiple_events_allowed){
     
                             let registered_slot_start = registered_slots[j].date;
-                            let r_s_hr =Number(event_slots[i].start_time.split(":")[0])
-                            let r_s_min = Number(event_slots[i].start_time.split(":")[1])
+                            let r_s_hr =Number(registered_slots[i].start_time.split(":")[0])
+                            let r_s_min = Number(registered_slots[i].start_time.split(":")[1])
                             registered_slot_start.setHours(r_s_hr,r_s_min)
                           
                             let registered_slot_end = registered_slots[j].date;
-                            let r_e_hr =Number(event_slots[i].end_time.split(":")[0])
-                            let r_e_min = Number(event_slots[i].end_time.split(":")[1])
+                            let r_e_hr =Number(registered_slots[i].end_time.split(":")[0])
+                            let r_e_min = Number(registered_slots[i].end_time.split(":")[1])
                             registered_slot_end.setHours(r_e_hr,r_e_min)
 
                             console.log({registered_slot_start,r_s_hr,r_s_min})
@@ -66,7 +73,11 @@ let checkSlots =async function(user:any,event:any){
                               check=0;
                               return false
                           }
-                    
+
+                        
+                            // let registered_slot_date = registered_slots[i].date
+                            // let registered_start_hour = 
+
 
                     }
                 }
