@@ -31,53 +31,66 @@ let checkSlots =async function(user:any,event:any){
         for(let i=0;i<event_slots.length;i++){
             if(!event_slots[i].multiple_events_allowed){
 
-                let current_slot_start = event_slots[i].date;
-                let s_hr =Number(event_slots[i].start_time.split(":")[0])
-                let s_min = Number(event_slots[i].start_time.split(":")[1])
-                current_slot_start.setHours(s_hr,s_min)
+                // let current_slot_start = event_slots[i].date;
+                // let s_hr =Number(event_slots[i].start_time.split(":")[0])
+                // let s_min = Number(event_slots[i].start_time.split(":")[1])
+                // current_slot_start.setHours(s_hr,s_min)
                
-                let current_slot_end = event_slots[i].date;
-                let e_hr =Number(event_slots[i].end_time.split(":")[0])
-                let e_min = Number(event_slots[i].end_time.split(":")[1])
-                current_slot_end.setHours(e_hr,e_min)
+                // let current_slot_end = event_slots[i].date;
+                // let e_hr =Number(event_slots[i].end_time.split(":")[0])
+                // let e_min = Number(event_slots[i].end_time.split(":")[1])
+                // current_slot_end.setHours(e_hr,e_min)
                 
                
-                console.log({current_slot_start,s_hr,s_min})
-                console.log({current_slot_end,e_hr,e_min})
+                // console.log({current_slot_start,s_hr,s_min})
+                // console.log({current_slot_end,e_hr,e_min})
 
-                // let slot_date = event_slots[i].date
-                // let start_hour = Number(event_slots[i].start_time.split(":")[0])
-                // let start_min =  Number(event_slots[i].start_time.split(":")[1])
-                // let end_hour = Number(event_slots[i].end_time.split(":")[0])
-                // let end_min = Number(event_slots[i].end_time.split(":")[1])
-
+                let slot_date = event_slots[i].date
+                let start_hour = Number(event_slots[i].start_time.split(":")[0])
+                let start_min =  Number(event_slots[i].start_time.split(":")[1])
+                let end_hour = Number(event_slots[i].end_time.split(":")[0])
+                let end_min = Number(event_slots[i].end_time.split(":")[1])
+                let slot_start_time =  start_hour*60 + start_min
+                let slot_end_time = end_hour*60+end_min
                 for(let j=0;j<registered_slots.length;j++){
                 console.log({registered_slots})
                         if(!registered_slots[j].multiple_events_allowed){
     
-                            let registered_slot_start = registered_slots[j].date;
-                            let r_s_hr =Number(registered_slots[i].start_time.split(":")[0])
-                            let r_s_min = Number(registered_slots[i].start_time.split(":")[1])
-                            registered_slot_start.setHours(r_s_hr,r_s_min)
+                        //     let registered_slot_start = registered_slots[j].date;
+                        //     let r_s_hr =Number(registered_slots[i].start_time.split(":")[0])
+                        //     let r_s_min = Number(registered_slots[i].start_time.split(":")[1])
+                        //     registered_slot_start.setHours(r_s_hr,r_s_min)
                           
-                            let registered_slot_end = registered_slots[j].date;
-                            let r_e_hr =Number(registered_slots[i].end_time.split(":")[0])
-                            let r_e_min = Number(registered_slots[i].end_time.split(":")[1])
-                            registered_slot_end.setHours(r_e_hr,r_e_min)
+                        //     let registered_slot_end = registered_slots[j].date;
+                        //     let r_e_hr =Number(registered_slots[i].end_time.split(":")[0])
+                        //     let r_e_min = Number(registered_slots[i].end_time.split(":")[1])
+                        //     registered_slot_end.setHours(r_e_hr,r_e_min)
 
-                            console.log({registered_slot_start,r_s_hr,r_s_min})
-                            console.log({registered_slot_end,r_s_hr,r_s_min})
+                        //     console.log({registered_slot_start,r_s_hr,r_s_min})
+                        //   Number(registered_slots[i].end_time.split(":")[1])  console.log({registered_slot_end,r_s_hr,r_s_min})
                            
-                          if((current_slot_start>=registered_slot_start&&current_slot_start<registered_slot_end)||(current_slot_end>registered_slot_start&&current_slot_end<registered_slot_end)){
-                              console.log('false returned')
-                              check=0;
-                              return false
-                          }
+                        //   if((current_slot_start>=registered_slot_start&&current_slot_start<registered_slot_end)||(current_slot_end>registered_slot_start&&current_slot_end<registered_slot_end)){
+                        //       console.log('false returned')
+                        //       check=0;
+                        //       return false
+                        //   }
 
                         
-                            // let registered_slot_date = registered_slots[i].date
-                            // let registered_start_hour = 
+                            let registered_slot_date = registered_slots[i].date
+                            let registered_start_hour =Number(registered_slots[i].start_time.split(":")[0])
+                            let registered_start_min = Number(registered_slots[i].start_time.split(":")[1])
+                            let registered_end_hour = Number(registered_slots[i].end_time.split(":")[0])
+                            let registered_end_min =Number(registered_slots[i].end_time.split(":")[1])
+                            let registered_slot_start_time = registered_start_hour*60+registered_start_min
+                            let registered_slot_end_time = registered_end_hour*60  + registered_end_min
 
+                            if(slot_date == registered_slot_date){
+                                if(slot_start_time>=registered_slot_start_time && slot_start_time<=registered_slot_end_time || slot_end_time>registered_slot_start_time && slot_end_time<=registered_slot_end_time){
+                                    console.log('False returned')
+                                    check=0
+                                    return false;
+                                }
+                            }
 
                     }
                 }
