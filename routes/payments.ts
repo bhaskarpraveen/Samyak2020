@@ -102,7 +102,7 @@ router.post('/add-payment',VerifyToken,async function(request:jwt_request,respon
                     let headers = { 'X-Api-Key': process.env.INSTAMOJO_KEY , 'X-Auth-Token': process.env.INSTAMOJO_TOKEN}
                 try{
                     let payment_response=  await axios({
-                        method:'POST',
+                        method:'GET',
                         url:'https://test.instamojo.com/api/1.1/payment-requests/'+payment_request_id+'/'+payment_id,
                         headers:headers
                     })
