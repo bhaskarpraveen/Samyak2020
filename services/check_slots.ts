@@ -83,9 +83,9 @@ let checkSlots =async function(user:any,event:any){
                             let registered_end_min =Number(registered_slots[i].end_time.split(":")[1])
                             let registered_slot_start_time = registered_start_hour*60+registered_start_min
                             let registered_slot_end_time = registered_end_hour*60  + registered_end_min
+
                             slot_date.setHours(0,0,0,0)
                             registered_slot_date.setHours(0,0,0,0)
-                            console.log(slot_date.valueOf() == registered_slot_date.valueOf())
 
                             if(slot_date.valueOf() == registered_slot_date.valueOf()){
                                 if(slot_start_time>=registered_slot_start_time && slot_start_time<=registered_slot_end_time || slot_end_time>registered_slot_start_time && slot_end_time<=registered_slot_end_time){
