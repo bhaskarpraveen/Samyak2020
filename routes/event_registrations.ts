@@ -144,6 +144,7 @@ router.get('/user-events',VerifyToken,async function(request:jwt_request,respons
                     let obj :any= temp_event
                     obj.all_slots=all_slots
                     obj.added_slots=added_slots
+                    console.log({...obj,all_slots:all_slots,added_slots})
 
                     event_obj.push(obj);
                 }
