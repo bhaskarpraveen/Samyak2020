@@ -74,7 +74,7 @@ router.post('/event-register',VerifyToken,async function(request:jwt_request,res
 
 });
 
-router.get('/event-registrations',async function(request:express.Request,response:express.Response){
+router.get('/event-registrations',VerifyToken,async function(request:jwt_request,response:express.Response){
     const {eventId} = request.query;
     if(eventId){
         let registrations = await UserEventRegistration.aggregate([
@@ -117,7 +117,7 @@ router.get('/event-registrations',async function(request:express.Request,respons
            }
            
        }
-    
+       console.log({record})
         return response.status(200).json({registrations:record});
     }else{
         return response.status(501).json({message:'Enter event id'});
