@@ -133,7 +133,7 @@ router.get('/user-events',VerifyToken,async function(request:jwt_request,respons
                 let events = await UserEventRegistration.find({user_id:user._id})
                 let event_obj=[]
                 for(let i=0;i<events.length;i++){
-                    let temp_event = await Event.findOne({_id:events[i].event_id})
+                    let temp_event:any = await Event.findOne({_id:events[i].event_id})
                     let all_slots = await EventSlot.find({event_id:events[i]._id})
                     let tmp_slots = await UserEventBatch.find({user_id:userId,event_id:temp_event?._id})
                     let added_slots = []
@@ -141,12 +141,11 @@ router.get('/user-events',VerifyToken,async function(request:jwt_request,respons
                         let slot = await EventSlot.findOne({_id:tmp_slots[i].batch_id})
                         added_slots.push(slot)
                     }
-                    let obj :any= temp_event
-                    obj.all_slots=all_slots
-                    obj.added_slots=added_slots
-                    console.log({...obj,all_slots:all_slots,added_slots})
+                    temp_event.all_slots = all_slots
+                    temp_event.tmp_slots = tmp_slots
+                    console.log(temp_event)
 
-                    event_obj.push(obj);
+                    event_obj.push(temp_event);
                 }
 
                 return response.status(200).json(event_obj);
