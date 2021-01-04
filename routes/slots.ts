@@ -8,7 +8,11 @@ import VerifyUserRole from '../middlewares/verify_user_role';
 const router:express.Router = express.Router();
 
 
-router.post('/add',VerifyToken,VerifyUserRole({collection:'Events',permission:'manage_batches'}),async function(request:express.Request,response:express.Response){
+interface jwt_request extends express.Request{
+    tokenData?:{userId?:String}
+}
+
+router.post('/add',VerifyToken,VerifyUserRole({collection:'Events',permission:'manage_batches'}),async function(request:jwt_request,response:express.Response){
     const {name,meet_link,eventId,date,start_time,end_time, multiple_events_allowed} = request.body;
     if(name&&meet_link&&eventId&&date&&start_time&&end_time&&( multiple_events_allowed!=null)){
         let findEvent = await Event.findOne({_id:eventId});
@@ -47,7 +51,7 @@ router.post('/add',VerifyToken,VerifyUserRole({collection:'Events',permission:'m
     }
 })
 
-router.post('/all-slots',VerifyToken,VerifyUserRole({collection:'Events',permission:'manage_batches'}),async function(request:express.Request,response:express.Response){
+router.post('/all-slots',VerifyToken,VerifyUserRole({collection:'Events',permission:'manage_batches'}),async function(request:jwt_request,response:express.Response){
     const {eventId} = request.body;
     if(eventId){
         let slots = await EventSlot.find({event_id:eventId});
@@ -57,7 +61,7 @@ router.post('/all-slots',VerifyToken,VerifyUserRole({collection:'Events',permiss
     }
 });
 
-router.post('/delete',VerifyToken,VerifyUserRole({collection:'Events',permission:'manage_batches'}),async function(request:express.Request,response:express.Response){
+router.post('/delete',VerifyToken,VerifyUserRole({collection:'Events',permission:'manage_batches'}),async function(request:jwt_request,response:express.Response){
     const {slotId} = request.body;
     if(slotId){
         let FindSlot = await EventSlot.findOne({_id:slotId});
@@ -79,7 +83,7 @@ router.post('/delete',VerifyToken,VerifyUserRole({collection:'Events',permission
 
 
 
-router.post('/assign-batch',VerifyToken,VerifyUserRole({collection:'Events',permission:'manage_participants'}),async function(request:express.Request,response:express.Response){
+router.post('/assign-batch',VerifyToken,VerifyUserRole({collection:'Events',permission:'manage_participants'}),async function(request:jwt_request,response:express.Response){
         const {eventId,batchId} = request.body;
         let {users} = request.body;
         let check=1;
@@ -120,7 +124,7 @@ router.post('/assign-batch',VerifyToken,VerifyUserRole({collection:'Events',perm
         }
 });
 
-router.post('/remove-user',VerifyToken,VerifyUserRole({collection:'Events',permission:'manage_participants'}),async function(request:express.Request,response:express.Response){
+router.post('/remove-user',VerifyToken,VerifyUserRole({collection:'Events',permission:'manage_participants'}),async function(request:jwt_request,response:express.Response){
     const {userId,eventId,batchId} = request.body;
     if(userId&&eventId&&batchId){
         let user = await User.findOne({_id:userId});
