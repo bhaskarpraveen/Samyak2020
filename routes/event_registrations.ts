@@ -5,7 +5,7 @@ import UserEventRegistration from '../models/user_event_registrations';
 import EventType from '../models/event_types';
 import VerifyUserRole from '../middlewares/verify_user_role'
 import VerifyToken from '../middlewares/verify_token';
-import mongoose from 'mongoose';
+import mongoose, { Mongoose } from 'mongoose';
 import fs from 'fs';
 import EventSlot from '../models/event_slots';
 import UserEventBatch from '../models/user_event_batch';
@@ -134,7 +134,15 @@ router.get('/user-events',VerifyToken,async function(request:jwt_request,respons
                 let event_obj=[]
                 for(let i=0;i<events.length;i++){
                     let temp_event = await Event.findOne({_id:events[i].event_id})
-                    event_obj.push(temp_event);
+                    let all_slots = await EventSlot.find({event_id:events[i]._id})
+                    let tmp_slots = await UserEventBatch.find({user_id:new mongoose.Schema.Types.ObjectId(String(userId)),event_id:new mongoose.Schema.Types.ObjectId(String(temp_event?._id))})
+                    let added_slots = []
+                    for(let j=0;j<tmp_slots.length;j++){
+                        let slot = await EventSlot.findOne({_id:tmp_slots.batch_id})
+                        added_slots.push(slot)
+                    }
+                    let temp={...temp_event,all_slots:all_slots,added_slots:added_slots}
+                    event_obj.push(temp);
                 }
 
                 return response.status(200).json(event_obj);

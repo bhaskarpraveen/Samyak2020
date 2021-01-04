@@ -3,7 +3,7 @@ import { Schema, Document, model } from 'mongoose';
 interface IUserEventBatchSchema extends Document{
     user_id:Schema.Types.ObjectId,
     event_id:Schema.Types.ObjectId,
-    batch_id:Schema.Types.ObjectId
+    batch_id:Schema.Types.ObjectId,
     created_at:Date,
     updated_at?:Date
 }
