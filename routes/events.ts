@@ -11,6 +11,7 @@ import fs from 'fs';
 import csvtojson from 'csvtojson';
 import Department from '../models/departments';
 import EventSlot from '../models/event_slots';
+import UserEventBatch from '../models/user_event_batch';
 const router:express.Router = express.Router();
 
 
@@ -441,7 +442,12 @@ router.get('/get-events',async function(request:express.Request,response:express
                             as: "department"        
                         }
                     },
+
                 ])
+                for(let i=0;i<all_events.length;i++){
+                    all_events[i]['slots'] = await EventSlot.find({event_id:all_events[i]._id})
+                }
+                
                 return response.status(200).json({events:all_events})
             }else{
                 let dept = await Department.findOne({name:String(event_department)})
@@ -458,7 +464,9 @@ router.get('/get-events',async function(request:express.Request,response:express
                         }
                     },
                 ])
-    
+                for(let i=0;i<events.length;i++){
+                    events[i]['slots'] = await EventSlot.find({event_id:events[i]._id})
+                }
                 return response.status(200).json({events:events})
             }
            
