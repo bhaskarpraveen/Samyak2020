@@ -108,9 +108,10 @@ router.post('/assign-batch',VerifyToken,VerifyUserRole({collection:'Events',perm
                                 });
                                 let promise = await new_record.save();
                         }
-                        return response.status(200).json({message:'Successfully assigned'})
-                    });
                        
+                    });
+                    
+                    return response.status(200).json({message:'Successfully assigned'})
                     }else{
                         return response.status(501).json({message:'batch not found'})
 
