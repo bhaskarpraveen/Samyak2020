@@ -135,10 +135,10 @@ router.get('/user-events',VerifyToken,async function(request:jwt_request,respons
                 for(let i=0;i<events.length;i++){
                     let temp_event = await Event.findOne({_id:events[i].event_id})
                     let all_slots = await EventSlot.find({event_id:events[i]._id})
-                    let tmp_slots = await UserEventBatch.find({user_id:new mongoose.Schema.Types.ObjectId(String(userId)),event_id:new mongoose.Schema.Types.ObjectId(String(temp_event?._id))})
+                    let tmp_slots = await UserEventBatch.find({user_id:userId,event_id:temp_event?._id})
                     let added_slots = []
                     for(let j=0;j<tmp_slots.length;j++){
-                        let slot = await EventSlot.findOne({_id:tmp_slots.batch_id})
+                        let slot = await EventSlot.findOne({_id:tmp_slots[i].batch_id})
                         added_slots.push(slot)
                     }
                     let temp={...temp_event,all_slots:all_slots,added_slots:added_slots}

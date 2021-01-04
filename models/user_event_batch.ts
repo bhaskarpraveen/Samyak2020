@@ -1,9 +1,9 @@
 import { Schema, Document, model } from 'mongoose';
 
 interface IUserEventBatchSchema extends Document{
-    user_id:Schema.Types.ObjectId,
-    event_id:Schema.Types.ObjectId,
-    batch_id:Schema.Types.ObjectId,
+    user_id:String ,
+    event_id:String ,
+    batch_id:String,
     created_at:Date,
     updated_at?:Date
 }
