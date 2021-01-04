@@ -141,7 +141,9 @@ router.get('/user-events',VerifyToken,async function(request:jwt_request,respons
                         let slot = await EventSlot.findOne({_id:tmp_slots[i].batch_id})
                         added_slots.push(slot)
                     }
-                    let obj = {temp_event,all_slots:all_slots,added_slots:added_slots}
+                    let obj :any= temp_event
+                    obj.all_slots=all_slots
+                    obj.added_slots=added_slots
 
                     event_obj.push(obj);
                 }
