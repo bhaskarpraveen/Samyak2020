@@ -143,7 +143,7 @@ router.get('/user-events',VerifyToken,async function(request:jwt_request,respons
                         added_slots.push(slot)
                     }
                    
-                    temp_event = Object.assign({}, temp_event, {all_slots: all_slots,tmp_slots:tmp_slots});
+                    temp_event = Object.assign({}, temp_event._doc, {all_slots: all_slots,tmp_slots:tmp_slots});
                     console.log(temp_event)
 
                     event_obj.push(temp_event);
