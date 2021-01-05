@@ -142,7 +142,8 @@ router.get('/user-events',VerifyToken,async function(request:jwt_request,respons
                         let slot = await EventSlot.findOne({_id:tmp_slots[i].batch_id})
                         added_slots.push(slot)
                     }
-                    temp_event = {...temp_event,all_slots:all_slots,tmp_slots:tmp_slots}
+                    temp_event['all_slots']=all_slots 
+                    temp_event['tmp_slots']=tmp_slots
                     console.log(temp_event)
 
                     event_obj.push(temp_event);
