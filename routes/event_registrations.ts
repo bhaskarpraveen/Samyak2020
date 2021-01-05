@@ -135,7 +135,7 @@ router.get('/user-events',VerifyToken,async function(request:jwt_request,respons
                 for(let i=0;i<events.length;i++){
                     let temp_event:any = await Event.findOne({_id:events[i].event_id})
                 
-                    let all_slots = await EventSlot.find({event_id:events[i]._id})
+                    let all_slots = await EventSlot.find({event_id:events[i].event_id})
                     let tmp_slots = await UserEventBatch.find({user_id:userId,event_id:temp_event?._id})
                     let added_slots = []
                     for(let j=0;j<tmp_slots.length;j++){
