@@ -95,7 +95,7 @@ router.post('/login',async function(request:express.Request,response:express.Res
                         }
 
                     }else{
-                        return response.status(501).json({message:'Email is not verified yet'})
+                        return response.status(501).json({message:'Email is not verified yet, check your email for the verification link'})
                     }
                 }else{
                     return response.status(501).json({message:'Invalid Credentials'})
