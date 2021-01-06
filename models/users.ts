@@ -67,8 +67,10 @@ userSchema.methods.verifyStatus=function verifyStatus(){
 
 //creates a unique samyak id 
 userSchema.pre('save',async  function(done){
-    let id_string=await generateSamyakId();
-    this.set('samyak_id',id_string);
+    if(this.isNew){
+        let id_string=await generateSamyakId();
+        this.set('samyak_id',id_string);
+    }
     
     done();
 }) 
