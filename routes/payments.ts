@@ -112,7 +112,7 @@ router.post('/add-payment',VerifyToken,async function(request:jwt_request,respon
                         payment_request_id:payment_response.data['payment_request'].id,	
                         instrument_type:payment_response.data['payment_request'].payment.instrument_type,
                         billing_instrument:payment_response.data['payment_request'].payment.billing_instrument,
-                        amount:payment_response.data["amount"].payment.amount,
+                        amount:payment_response.data['payment_request'].payment.amount,
                         status:payment_response.data['payment_request'].payment.status,
                     })
                     let promise =  payment.save()
