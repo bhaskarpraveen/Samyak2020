@@ -1,9 +1,11 @@
 import express from 'express';
 import User from '../models/users';
 import VerifyToken from '../middlewares/verify_token';
-import  jwt from 'jsonwebtoken';
+import  jwt, { verify } from 'jsonwebtoken';
 import VerifyUserRole from '../middlewares/verify_user_role'
 import UserRole from '../models/user_roles';
+import VerifyAdministration from '../middlewares/verify_administration';
+import Payment from '../models/payments';
 const router:express.Router = express.Router();
 const JWT_KEY =  process.env.JWT_KEY ||'jsonwebtoken'
 
@@ -111,6 +113,7 @@ router.post('/edit-user',VerifyToken,async function(request:jwt_request,response
     }
 })
 
+//status active or inacttive(blocked)
 router.post('/account-status',VerifyToken,async function(request:jwt_request,response:express.Response){
     const {userId} = request.body;
     if(userId){
@@ -133,6 +136,42 @@ router.post('/account-status',VerifyToken,async function(request:jwt_request,res
     }else{
         return response.status(501).json({message:'Enter all details'})
     }
+})
+
+// user details for dashbboard
+router.get('/users-details',VerifyToken,async function(request:express.Request,response:express.Response){
+    let total_users = await User.find({}).count()
+    let klv = await User.find({college:"KLV"}).count()
+    let klh = await User.find({college:"KLH"}).count()
+    let other_college = await User.find({college:{$nin:["KLV","KLH"]}}).count()
+
+    return response.status(200).json({count:total_users,klv_count:klv,klh_count:klh,others_count:other_college});
+});
+
+
+//payment details for dashboard
+router.get('/payment-details',VerifyToken,async function (request:express.Request,response:express.Response){
+    let payments_count = await Payment.find({status:"Credit"}).count()
+    let payments = await Payment.find({status:"Credit"});
+    let sum = 0 ;
+    let klv_sum =0 ;
+    let klh_sum =0;
+    let other_sum =0;
+    let users = await User.find({});
+    for(let i=0;i<payments.length;i++){
+        if(payments[i].amount){
+            sum=sum + Number(payments[i].amount);
+            let user = users.find(x=>{payments[i].user_id==x._id});
+            if(user?.college=="KLV"){
+                klv_sum  =klv_sum+  Number(payments[i].amount)
+            }else if(user?.college=="KLH"){
+                klh_sum =  klh_sum+ Number(payments[i].amount);
+            }else{
+                other_sum= other_sum+ Number(payments[i].amount);
+            }
+        }
+    }
+    return response.status(200).json({total_number:payments_count,total_collected:sum,klv_collected:klv_sum,klh_collected:klh_sum,other_collected:other_sum});
 })
 
 
