@@ -55,14 +55,14 @@ router.post('/login',async function(request:express.Request,response:express.Res
 })
 
 //returns all users
-router.get('/all-users',VerifyToken,async function(request:jwt_request,response:express.Response){
+router.get('/all-users',VerifyToken,VerifyUserRole({collection:"Users",permission:"view"}),async function(request:jwt_request,response:express.Response){
     const users = await User.find({},'_id samyak_id name email mobile college current_year branch gender college_id status role email_verified created_at updated_at');
     return response.status(200).json(users);
 
 })
 
 //delete a user
-router.post('/delete-user',VerifyToken,async function(request:jwt_request,response:express.Response){
+router.post('/delete-user',VerifyToken,VerifyUserRole({collection:"Users",permission:"delete"}),async function(request:jwt_request,response:express.Response){
     const {userId} = request.body;
     if(userId){
         let user = await User.findOne({_id:userId});
@@ -86,7 +86,7 @@ router.post('/delete-user',VerifyToken,async function(request:jwt_request,respon
 
 
 //edit user details
-router.post('/edit-user',VerifyToken,async function(request:jwt_request,response:express.Response){
+router.post('/edit-user',VerifyToken,VerifyUserRole({collection:"Users",permission:"edit"}),async function(request:jwt_request,response:express.Response){
     let {name,email,mobile,college,current_year,branch,gender,college_id} = request.body;
     if(name&&email&&mobile&&college&&current_year&&branch&&gender&&college_id){
 
@@ -114,7 +114,7 @@ router.post('/edit-user',VerifyToken,async function(request:jwt_request,response
 })
 
 //status active or inacttive(blocked)
-router.post('/account-status',VerifyToken,async function(request:jwt_request,response:express.Response){
+router.post('/account-status',VerifyToken,VerifyUserRole({collection:"Users",permission:"edit"}),async function(request:jwt_request,response:express.Response){
     const {userId} = request.body;
     if(userId){
         const user = await User.findOne({_id:userId});
