@@ -29,6 +29,7 @@ router.post('/login',async function(request:express.Request,response:express.Res
                            let role = await UserRole.findOne({user_id:user._id});
                             if(role){
                                 let token = jwt.sign({email:email,userId:user._id},JWT_KEY,{expiresIn:'3h'})
+                                    console.log({JWT_KEY})
                                  return response.status(200).json({token:token})
                             }else{
                                 return response.status(501).json({message:'Authorization denied'})
