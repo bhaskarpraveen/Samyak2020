@@ -58,10 +58,10 @@ let VerifyUserRole = (data:role_data)=>{
                         return response.status(500).json({message:'Authorization failed'});
                     }
                 }else{
-                    return response.status(501).json({message:'Authorization failed'})
+                    return response.status(501).json({message:'Authorization failed No role'})
                 }
             }else{
-                return response.status(501).json({message:'Authorization failed'})
+                return response.status(501).json({message:'Authorization failed No user'})
             }
             }
         }
