@@ -139,7 +139,7 @@ router.post('/account-status',VerifyToken,VerifyUserRole({collection:"Users",per
 })
 
 // user details for dashbboard
-router.get('/users-details',VerifyToken,async function(request:express.Request,response:express.Response){
+router.get('/users-details',VerifyToken,async function(request:jwt_request,response:express.Response){
     let total_users = await User.find({}).count()
     let klv = await User.find({college:"KLV"}).count()
     let klh = await User.find({college:"KLH"}).count()
@@ -150,7 +150,7 @@ router.get('/users-details',VerifyToken,async function(request:express.Request,r
 
 
 //payment details for dashboard
-router.get('/payment-details',VerifyToken,async function (request:express.Request,response:express.Response){
+router.get('/payment-details',VerifyToken,async function (request:jwt_request,response:express.Response){
     let payments_count = await Payment.find({status:"Credit"}).count()
     let payments = await Payment.find({status:"Credit"});
     let sum = 0 ;
