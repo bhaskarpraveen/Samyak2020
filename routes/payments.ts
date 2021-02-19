@@ -9,6 +9,8 @@ import axios from 'axios';
 import PaymentRequest from '../models/payment_requests';
 import user_roles from '../models/user_roles';
 import Payment from '../models/payments';
+import dotenv from 'dotenv';
+dotenv.config();
 const JWT_KEY =  process.env.JWT_KEY ||'jsonwebtoken'
 
 interface jwt_request extends express.Request{

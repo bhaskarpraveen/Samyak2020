@@ -13,7 +13,8 @@ import Department from '../models/departments';
 import EventSlot from '../models/event_slots';
 import UserEventBatch from '../models/user_event_batch';
 const router:express.Router = express.Router();
-
+import dotenv from 'dotenv';
+dotenv.config();
 
 //interface 
 interface jwt_request extends express.Request{

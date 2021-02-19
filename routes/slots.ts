@@ -6,7 +6,8 @@ import UserEventBatch from '../models/user_event_batch';
 import VerifyToken from '../middlewares/verify_token';
 import VerifyUserRole from '../middlewares/verify_user_role';
 const router:express.Router = express.Router();
-
+import dotenv from 'dotenv';
+dotenv.config();
 
 interface jwt_request extends express.Request{
     tokenData?:{userId?:String}

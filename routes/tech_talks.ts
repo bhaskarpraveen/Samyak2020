@@ -12,7 +12,8 @@ import csvtojson from 'csvtojson';
 import EventSlot from '../models/event_slots';
 import TechTalk from '../models/tech_talks';
 const router:express.Router = express.Router();
-
+import dotenv from 'dotenv';
+dotenv.config();
 
 //interface 
 interface jwt_request extends express.Request{

@@ -7,6 +7,8 @@ import UserRole from '../models/user_roles';
 import VerifyAdministration from '../middlewares/verify_administration';
 import Payment from '../models/payments';
 const router:express.Router = express.Router();
+import dotenv from 'dotenv';
+dotenv.config();
 const JWT_KEY =  process.env.JWT_KEY ||'jsonwebtoken'
 
 //interface 
@@ -28,8 +30,7 @@ router.post('/login',async function(request:express.Request,response:express.Res
                         if(user.verifyStatus()){
                            let role = await UserRole.findOne({user_id:user._id});
                             if(role){
-                                let token = jwt.sign({email:email,userId:user._id},JWT_KEY,{expiresIn:'3h'})
-                                    console.log({JWT_KEY})
+                                let token = jwt.sign({email:email,userId:user._id},JWT_KEY,{expiresIn:'3h'})                            
                                  return response.status(200).json({token:token})
                             }else{
                                 return response.status(501).json({message:'Authorization denied'})

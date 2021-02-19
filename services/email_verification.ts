@@ -1,7 +1,8 @@
 import SendMail from './mail';
 import User from '../models/users'
 import jwt from 'jsonwebtoken';
-
+import dotenv from 'dotenv';
+dotenv.config();
 
 const JWT_KEY =  process.env.JWT_KEY ||'jsonwebtoken'
 

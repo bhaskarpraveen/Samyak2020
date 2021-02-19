@@ -13,6 +13,8 @@ import csvtojson from 'csvtojson';
 import formatDate from '../services/date_formate';
 import Payment from '../models/payments';
 import checkSlots from '../services/check_slots';
+import dotenv from 'dotenv';
+dotenv.config();
 const router:express.Router = express.Router();
 
 

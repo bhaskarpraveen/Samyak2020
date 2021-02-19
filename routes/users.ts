@@ -5,6 +5,8 @@ import jwt from 'jsonwebtoken';
 import emailVerification from '../services/email_verification';
 import SendMail from '../services/mail';
 import VerifyToken from '../middlewares/verify_token';
+import dotenv from 'dotenv';
+dotenv.config();
 const JWT_KEY =  process.env.JWT_KEY ||'jsonwebtoken'
 
 

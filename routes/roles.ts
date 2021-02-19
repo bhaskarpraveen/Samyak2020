@@ -7,6 +7,8 @@ import Permission from '../models/permissions';
 import UserRole from '../models/user_roles';
 import VerifyUserRole from '../middlewares/verify_user_role'
 const router:express.Router = express.Router();
+import dotenv from 'dotenv';
+dotenv.config();
 const JWT_KEY =  process.env.JWT_KEY ||'jsonwebtoken'
 
 //interface 
