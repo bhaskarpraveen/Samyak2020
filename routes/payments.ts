@@ -178,6 +178,49 @@ router.get('/all-payments',VerifyToken,async function(request:jwt_request,respon
     return response.status(200).json({payments:payments})
 });
 
+router.get('/payments/:id',VerifyToken,async function(request:jwt_request,response:express.Response){
+    let {id} = request.params;
+    if(id){
+        let user = await User.findOne({_id:id});
+        if(user){
+            let payments = await Payment.aggregate([
+                {
+                    $lookup:{
+                        from: 'users',
+                        localField: "user_id",
+                        foreignField: "_id",
+                        as: "user"        
+                    }
+                },
+                {
+                    $lookup:{
+                        from: 'payment_requests',
+                        localField: "payment_request_id",
+                        foreignField: "id",
+                        as: "payment_request"        
+                    }
+                },
+                {
+            
+                $project:{
+                    'user.password':0,
+                    'permissions.__v':0,
+                    '__v':0,
+                    
+                }
+                }
+            ]);
+
+            let payment = payments.find(p=>p.user[0]._id==id);
+            return response.status(200).json(payment);
+        }else{
+            return response.status(501).json({"message":"user not found"});
+        }
+    }else{
+        return response.status(501).json({'message':'Enter valid id'});
+    }
+})
+
 router.post('/edit-payment',VerifyToken,async function(request:jwt_request,response:express.Response){
     let {user_id,payment_id,instrument_type,billing_instrument,amount,status} = request.body;
     if(user_id&&payment_id&&instrument_type&&billing_instrument&&amount&&status){
