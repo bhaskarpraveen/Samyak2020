@@ -74,7 +74,7 @@ router.get('/create-request',VerifyToken,async function(request:jwt_request,resp
             return response.status(501).json({message:err.message})
         })
         }catch(e){
-            console.log(e.response.data)
+            
             return response.status(501).json({message:e.response.data})
         }
              }else{
@@ -146,6 +146,7 @@ router.post('/add-payment',VerifyToken,async function(request:jwt_request,respon
    
 })
 
+
 router.get('/all-payments',VerifyToken,async function(request:jwt_request,response:express.Response){
     let payments = await Payment.aggregate([
         {
@@ -175,6 +176,37 @@ router.get('/all-payments',VerifyToken,async function(request:jwt_request,respon
         }
     ])
     return response.status(200).json({payments:payments})
+});
+
+router.post('/edit-payment',VerifyToken,async function(request:jwt_request,response:express.Response){
+    let {user_id,payment_id,instrument_type,billing_instrument,amount,status} = request.body;
+    if(user_id&&payment_id&&instrument_type&&billing_instrument&&amount&&status){
+        let findUser = await User.findOne({_id:user_id});
+        if(findUser){
+            let d= new Date()
+            let promise = User.updateOne({user_id:user_id,payment_id:payment_id},{$set:{instrument_type:instrument_type,billing_instrument:billing_instrument,amount:amount,status:status,updated_at:d}});
+            promise.then(doc=>{
+                return response.status(200).json({'message':'Successfully updated'});
+            });
+
+            promise.catch(err=>{
+                return response.status(501).json({'message':err.message});
+            });
+        }else{
+            return response.status(501).json({'message':'user not found'});
+        }
+    }else{
+        return response.status(501).json({'message':'Enter valid details'});
+    }
+    // let payment = new Payment({
+    //     user_id:user_id, 
+    //     payment_id:payment_id,
+    //     payment_request_id:payment_request_id,	
+    //     instrument_type:instrument_type,
+    //     billing_instrument:billing_instrument,
+    //     amount:amount,
+    //     status:status,
+    // })
 })
 
 export default router;
