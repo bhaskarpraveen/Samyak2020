@@ -20,7 +20,7 @@ interface jwt_request extends express.Request{
     tokenData?:{userId?:String}
 }
 
-router.post('/add-talk',VerifyToken,async function(request:jwt_request,response:express.Response){
+router.post('/add-talk',VerifyToken,VerifyUserRole({collection:'Events',permission:'add'}),async function(request:jwt_request,response:express.Response){
     const {
         title,
         speaker,
@@ -68,7 +68,7 @@ router.post('/add-talk',VerifyToken,async function(request:jwt_request,response:
 })
 
 
-router.post('/edit-talk',VerifyToken,async function(request:jwt_request,response:express.Response){
+router.post('/edit-talk',VerifyToken,VerifyUserRole({collection:'Events',permission:'edit'}),async function(request:jwt_request,response:express.Response){
     const {
         title,
         speaker,
@@ -114,7 +114,7 @@ router.post('/edit-talk',VerifyToken,async function(request:jwt_request,response
     }
 })
 
-router.get('/all-talks',VerifyToken,async function(request:jwt_request,response:express.Response){
+router.get('/all-talks',VerifyToken,VerifyUserRole({collection:'Events',permission:'view'}),async function(request:jwt_request,response:express.Response){
 
     if(request.tokenData){
         const {userId} = request.tokenData;
@@ -167,7 +167,7 @@ router.get('/all-talks',VerifyToken,async function(request:jwt_request,response:
 })
 
 
-router.post('/delete-talk',VerifyToken,async function(request:jwt_request,response:express.Response){
+router.post('/delete-talk',VerifyToken,VerifyUserRole({collection:'Events',permission:'delete'}),async function(request:jwt_request,response:express.Response){
     const {talkId} = request.body;
     if(talkId){
         let FindTalk = await TechTalk.findOne({_id:talkId});
@@ -188,7 +188,7 @@ router.post('/delete-talk',VerifyToken,async function(request:jwt_request,respon
 })
 
 
-router.post('/add-csvTalks',VerifyToken,async function(request:jwt_request,response:express.Response){
+router.post('/add-csvTalks',VerifyToken,VerifyUserRole({collection:'Events',permission:'add'}),async function(request:jwt_request,response:express.Response){
     if(request.files){
         const {newfile} = request.files;
 
