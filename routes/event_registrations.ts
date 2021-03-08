@@ -37,7 +37,7 @@ router.post('/event-register',VerifyToken,async function(request:jwt_request,res
                         let FindRegistration = await UserEventRegistration.findOne({user_id:userId,event_id:eventId});
                     if(!FindRegistration){
                         let check = await checkSlots(user,event);
-                        console.log(check)
+                        
                         if(check){
                             let new_registration = new UserEventRegistration({
                                 user_id:userId,
@@ -119,7 +119,7 @@ router.get('/event-registrations',VerifyToken,async function(request:jwt_request
            }
            
        }
-       console.log({record})
+       
         return response.status(200).json({registrations:record});
     }else{
         return response.status(501).json({message:'Enter event id'});
@@ -151,7 +151,7 @@ router.get('/user-events',VerifyToken,async function(request:jwt_request,respons
                     }
                    
                     temp_event = Object.assign({}, temp_event._doc, {all_slots: all_slots,registered_slots:registered_slots});
-                    console.log(temp_event)
+                    
 
                     event_obj.push(temp_event);
                 }

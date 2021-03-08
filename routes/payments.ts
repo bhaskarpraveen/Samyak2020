@@ -28,10 +28,10 @@ router.get('/create-request',VerifyToken,async function(request:jwt_request,resp
                 let headers = { 'X-Api-Key': process.env.INSTAMOJO_KEY , 'X-Auth-Token': process.env.INSTAMOJO_TOKEN}
             const payload = {
             purpose: 'Samyak 2020 registration',
-            amount: '25',
+            amount: '250',
             phone: user.mobile,
             buyer_name: user.name,
-            redirect_url: 'https://blissful-mcnulty-742973.netlify.app/#/payment-verification',
+            redirect_url: 'https://klsamyak.in/#/payment-verification',
             send_email: false,
             // webhook: 'https://klsamyak-dev.tk/payments/webhook',
             send_sms: true,
@@ -42,7 +42,7 @@ router.get('/create-request',VerifyToken,async function(request:jwt_request,resp
         try{
           let payment_response=  await axios({
               method:'POST',
-              url:'https://test.instamojo.com/api/1.1/payment-requests/',
+              url:'https://www.instamojo.com/api/1.1/payment-requests/',
               data:payload,
               headers:headers
           })
@@ -106,7 +106,7 @@ router.post('/add-payment',VerifyToken,async function(request:jwt_request,respon
                 try{
                     let payment_response=  await axios({
                         method:'GET',
-                        url:'https://test.instamojo.com/api/1.1/payment-requests/'+payment_request_id+'/'+payment_id,
+                        url:'https://www.instamojo.com/api/1.1/payment-requests/'+payment_request_id+'/'+payment_id,
                         headers:headers
                     })
                     let payment = new Payment({

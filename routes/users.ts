@@ -181,7 +181,7 @@ router.post('/forgot-password',async function(request:express.Request,response:e
                         // password:new_string
                         token:token
                     },
-                    from:'praveennaidu264@gmail.com',
+                    from:'notification@klsamyak.in',
                     to:email,
                     subject:'Password Reset'
                 }
