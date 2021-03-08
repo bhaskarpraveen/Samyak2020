@@ -8,6 +8,7 @@ import VerifyToken from '../middlewares/verify_token';
 import axios from 'axios';
 import PaymentRequest from '../models/payment_requests';
 import user_roles from '../models/user_roles';
+import VerifyUserRole from '../middlewares/verify_user_role'
 import Payment from '../models/payments';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -147,7 +148,7 @@ router.post('/add-payment',VerifyToken,async function(request:jwt_request,respon
 })
 
 
-router.get('/all-payments',VerifyToken,async function(request:jwt_request,response:express.Response){
+router.get('/all-payments',VerifyToken,VerifyUserRole({collection:'Payments',permission:'view'}),async function(request:jwt_request,response:express.Response){
     let payments = await Payment.aggregate([
         {
             $lookup:{
@@ -178,7 +179,7 @@ router.get('/all-payments',VerifyToken,async function(request:jwt_request,respon
     return response.status(200).json({payments:payments})
 });
 
-router.get('/payments/:id',VerifyToken,async function(request:jwt_request,response:express.Response){
+router.get('/payments/:id',VerifyToken,VerifyUserRole({collection:'Payments',permission:'edit'}),async function(request:jwt_request,response:express.Response){
     let {id} = request.params;
     if(id){
         let user = await User.findOne({_id:id});
@@ -221,7 +222,7 @@ router.get('/payments/:id',VerifyToken,async function(request:jwt_request,respon
     }
 })
 
-router.post('/edit-payment',VerifyToken,async function(request:jwt_request,response:express.Response){
+router.post('/edit-payment',VerifyToken,VerifyUserRole({collection:'Payments',permission:'edit'}),async function(request:jwt_request,response:express.Response){
     let {user_id,payment_id,instrument_type,billing_instrument,amount,status} = request.body;
     if(user_id&&payment_id&&instrument_type&&billing_instrument&&amount&&status){
         let findUser = await User.findOne({_id:user_id});

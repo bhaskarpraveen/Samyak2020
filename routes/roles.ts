@@ -143,6 +143,10 @@ router.post('/manage-permissions',VerifyToken,VerifyUserRole({collection:'Roles'
                             edit:permission.Roles.edit,
                             delete:permission.Roles.delete
                         },
+                        Payments:{
+                            view:permission.Payments.view,
+                            edit:permission.Payments.edit
+                        }
                         // User_Roles:{
                         //     add:permission.User_Roles.add,
                         //     view:permission.User_Roles.view,

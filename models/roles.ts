@@ -33,6 +33,10 @@ RoleSchema.pre('save',async function(){
                 edit:false,
                 delete:false
             },
+            Payments:{
+                view:false,
+                edit:false
+            }
             // User_Roles:{
             //     add:false,
             //     view:false,
