@@ -121,7 +121,7 @@ router.post('/manage-permissions',VerifyToken,VerifyUserRole({collection:'Roles'
         if(findRole){
             let new_permission = await Permission.findOne({role_id:findRole._id})
             if(new_permission){
-                if(permission.Users&&permission.Events&&permission.Roles&&permission.User_Roles){
+                if(permission.Users&&permission.Events&&permission.Roles&&permission.Payments){
                     let obj = {
                         Users:{
                             add:permission.Users.add,
