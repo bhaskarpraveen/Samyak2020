@@ -33,12 +33,12 @@ RoleSchema.pre('save',async function(){
                 edit:false,
                 delete:false
             },
-            User_Roles:{
-                add:false,
-                view:false,
-                edit:false,
-                delete:false
-            }
+            // User_Roles:{
+            //     add:false,
+            //     view:false,
+            //     edit:false,
+            //     delete:false
+            // }
         }
         });
 

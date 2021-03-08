@@ -143,12 +143,12 @@ router.post('/manage-permissions',VerifyToken,VerifyUserRole({collection:'Roles'
                             edit:permission.Roles.edit,
                             delete:permission.Roles.delete
                         },
-                        User_Roles:{
-                            add:permission.User_Roles.add,
-                            view:permission.User_Roles.view,
-                            edit:permission.User_Roles.edit,
-                            delete:permission.User_Roles.delete
-                        }
+                        // User_Roles:{
+                        //     add:permission.User_Roles.add,
+                        //     view:permission.User_Roles.view,
+                        //     edit:permission.User_Roles.edit,
+                        //     delete:permission.User_Roles.delete
+                        // }
                     }
                     new_permission.permissions=obj;
                     let promise = new_permission.save();
@@ -176,7 +176,7 @@ router.post('/manage-permissions',VerifyToken,VerifyUserRole({collection:'Roles'
 })
 
 
-router.post('/add-UserRole',VerifyToken,async function(request:jwt_request,response:express.Response){
+router.post('/add-UserRole',VerifyToken,VerifyUserRole({collection:'Roles',permission:'edit'}),async function(request:jwt_request,response:express.Response){
     const {userId,RoleId} = request.body;
 
     if(userId&&RoleId){
@@ -226,7 +226,7 @@ router.post('/add-UserRole',VerifyToken,async function(request:jwt_request,respo
 
 
 
-router.post('/delete-UserRole',VerifyToken,async function(request:jwt_request,response:express.Response){
+router.post('/delete-UserRole',VerifyToken,VerifyUserRole({collection:'Roles',permission:'edit'}),async function(request:jwt_request,response:express.Response){
     const {userId} =  request.body;
 
     if(userId){
