@@ -28,7 +28,7 @@ router.get('/create-request',VerifyToken,async function(request:jwt_request,resp
                 let headers = { 'X-Api-Key': process.env.INSTAMOJO_KEY , 'X-Auth-Token': process.env.INSTAMOJO_TOKEN}
             const payload = {
             purpose: 'Samyak 2020 registration',
-            amount: '250',
+            amount: '200',
             phone: user.mobile,
             buyer_name: user.name,
             redirect_url: 'https://klsamyak.in/#/payment-verification',
