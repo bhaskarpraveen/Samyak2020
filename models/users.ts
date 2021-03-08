@@ -37,7 +37,7 @@ let userSchema =   new mongoose.Schema({
     college: { type: String, required: true },
     current_year: { type: String, required: true },
     branch: { type: String, required: true },
-    gender: { type: String, enum: ['Male', 'Female', 'Other'], required: true },
+    gender: { type: String, enum: ['Male', 'Female', 'Other','Prefer not to say'], required: true },
     college_id: { type: String, required: true },
     status: { type: Number, default: 1 },
     email_verified: { type: Number, default: 0 },
