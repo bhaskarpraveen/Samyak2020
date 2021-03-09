@@ -22,7 +22,7 @@ interface jwt_request extends express.Request{
 }
 
 //Add an event type
-router.post('/add-eventType',VerifyToken,VerifyUserRole({collection:'Events',permission:'add'}),async function(request:express.Request,response:express.Response){
+router.post('/add-eventType',VerifyToken,VerifyUserRole({collection:'Events',permission:'add'}),async function(request:jwt_request,response:express.Response){
     const {name} = request.body;
     if(name){
         let FindName = await EventType.findOne({name:name});
@@ -49,7 +49,7 @@ router.post('/add-eventType',VerifyToken,VerifyUserRole({collection:'Events',per
 });
 
 //get all event types
-router.get('/all-eventTypes',VerifyToken,VerifyUserRole({collection:'Events',permission:'view'}),async function(request:express.Request,response:express.Response){
+router.get('/all-eventTypes',VerifyToken,VerifyUserRole({collection:'Events',permission:'view'}),async function(request:jwt_request,response:express.Response){
     let eventTypes = await EventType.find({})
     return response.status(200).json(eventTypes)
 })
@@ -76,7 +76,7 @@ router.get('/event-types',async function(request:express.Request,response:expres
     return response.status(200).json({events:records})
 })
 //delete an event type
-router.post('delete-eventType',VerifyToken,VerifyUserRole({collection:'Events',permission:'delete'}),async function(request:express.Request,response:express.Response){
+router.post('delete-eventType',VerifyToken,VerifyUserRole({collection:'Events',permission:'delete'}),async function(request:jwt_request,response:express.Response){
     const {typeId} = request.body;
     if(typeId){
         let FindEvent = await EventType.findOne({_id:typeId});
@@ -103,7 +103,7 @@ router.post('delete-eventType',VerifyToken,VerifyUserRole({collection:'Events',p
 });
 
 //edit an event
-router.post('/edit-eventType',VerifyToken,VerifyUserRole({collection:'Events',permission:'edit'}),async function(request:express.Request,response:express.Response){
+router.post('/edit-eventType',VerifyToken,VerifyUserRole({collection:'Events',permission:'edit'}),async function(request:jwt_request,response:express.Response){
     const {typeId,name} = request.body;
     if(typeId&&name){
         let FindEvent = await EventType.findOne({_id:typeId});
@@ -124,7 +124,7 @@ router.post('/edit-eventType',VerifyToken,VerifyUserRole({collection:'Events',pe
 });
 
 //Add an event
-router.post('/add-event',VerifyToken,VerifyUserRole({collection:'Events',permission:'add'}),async function(request:express.Request,response:express.Response){
+router.post('/add-event',VerifyToken,VerifyUserRole({collection:'Events',permission:'add'}),async function(request:jwt_request,response:express.Response){
     const { name,
     department,
     organiser,
