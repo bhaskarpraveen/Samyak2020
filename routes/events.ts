@@ -313,8 +313,10 @@ router.post('/edit-event',VerifyToken,VerifyUserRole({collection:'Events',permis
                 if(FindEventType){
                     let findDepartment = await Department.findOne({name:department});
                     if(findDepartment){
-                        let promise = Event.updateOne({_id:eventId},{$set:{
-                            name:name,
+                        let updateObject;
+                        if(image){
+                            updateObject={
+                                name:name,
                             department:findDepartment._id,
                             organiser:organiser.trim(),
                             description:description,
@@ -325,7 +327,22 @@ router.post('/edit-event',VerifyToken,VerifyUserRole({collection:'Events',permis
                             faculty_organiser:faculty_organiser ||'-',
                             faculty_contact:faculty_contact||'-',
                             image:image
-                        }}) ;
+                            }
+                        }else{
+                            updateObject={
+                                name:name,
+                            department:findDepartment._id,
+                            organiser:organiser.trim(),
+                            description:description,
+                            // multiple_events_allowed:multiple_events_allowed,
+                            venue:venue,
+                            type:type,
+                            code:code,
+                            faculty_organiser:faculty_organiser ||'-',
+                            faculty_contact:faculty_contact||'-',
+                            }
+                        }
+                        let promise = Event.updateOne({_id:eventId},{$set:updateObject}) ;
                         promise.then(doc=>{
                             return response.status(200).json({message:'Successfully updated',response:doc})
                         })
