@@ -163,13 +163,17 @@ router.get('/payment-details',VerifyToken,async function (request:jwt_request,re
     for(let i=0;i<payments.length;i++){
         if(payments[i].amount){
             sum=sum + Number(payments[i].amount);
+            sum=Number(sum.toFixed(2))
             let user = await User.findOne({_id:payments[i].user_id});
             if(user?.college=="KLV"){
-                klv_sum  =klv_sum+  Number(payments[i].amount)
+                klv_sum  =klv_sum+  Number(payments[i].amount);
+                klv_sum = Number(klv_sum.toFixed(2))
             }else if(user?.college=="KLH"){
                 klh_sum =  klh_sum+ Number(payments[i].amount);
+                klh_sum = Number(klh_sum.toFixed(2))
             }else{
                 other_sum= other_sum+ Number(payments[i].amount);
+                other_sum = Number(other_sum.toFixed(2));
             }
         }
     }
