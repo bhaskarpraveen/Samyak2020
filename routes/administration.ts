@@ -159,11 +159,11 @@ router.get('/payment-details',VerifyToken,async function (request:jwt_request,re
     let klv_sum =0 ;
     let klh_sum =0;
     let other_sum =0;
-    let users = await User.find({});
+    
     for(let i=0;i<payments.length;i++){
         if(payments[i].amount){
             sum=sum + Number(payments[i].amount);
-            let user = users.find(x=>{payments[i].user_id==x._id});
+            let user = await User.findOne({_id:payments[i].user_id});
             if(user?.college=="KLV"){
                 klv_sum  =klv_sum+  Number(payments[i].amount)
             }else if(user?.college=="KLH"){
