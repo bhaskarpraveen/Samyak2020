@@ -269,32 +269,38 @@ router.get('/refresh/:payment_id',VerifyToken,async function(request:jwt_request
                 url:'https://www.instamojo.com/api/1.1/payment-requests/'+allRequests[i].id,
                 headers:headers
             });
-            if(payment_response){
-                console.log(payment_response)
-            //     if(payment_response.data){
-            //         let payments = payment_response.data['payment_request'].payments;
-            //     for(let j=0;j<payments[i].length;j++){
-            //         if(payments[j].status=="Credit"){
-            //             let findP=await Payment.findOne({payment_id:payment_id,payment_request_id:allRequests[i].id,status:"Credit"});
-            //         if(!findP){
-            //         let payment = new Payment({
-            //             user_id:allRequests[i].user_id, 
-            //             payment_id:payment_response.data['payment_request'].payment.payment_id,
-            //             payment_request_id:payment_response.data['payment_request'].id,	
-            //             instrument_type:payment_response.data['payment_request'].payment.instrument_type,
-            //             billing_instrument:payment_response.data['payment_request'].payment.billing_instrument,
-            //             amount:payment_response.data['payment_request'].payment.amount,
-            //             status:payment_response.data['payment_request'].payment.status,
-            //         })
-            //          await  payment.save()
-            //          flag=1;
-            //          break;
-            //         }
-            //     }
-            //     }
-            // }
+            try{
+                if(payment_response){
+               
+                    if(payment_response.data){
+                        let payments = payment_response.data['payment_request'].payments;
+                    for(let j=0;j<payments[i].length;j++){
+                        if(payments[j].status=="Credit"){
+                            let findP=await Payment.findOne({payment_id:payment_id,payment_request_id:allRequests[i].id,status:"Credit"});
+                        if(!findP){
+                        let payment = new Payment({
+                            user_id:allRequests[i].user_id, 
+                            payment_id:payment_response.data['payment_request'].payment.payment_id,
+                            payment_request_id:payment_response.data['payment_request'].id,	
+                            instrument_type:payment_response.data['payment_request'].payment.instrument_type,
+                            billing_instrument:payment_response.data['payment_request'].payment.billing_instrument,
+                            amount:payment_response.data['payment_request'].payment.amount,
+                            status:payment_response.data['payment_request'].payment.status,
+                        })
+                         await  payment.save()
+                         flag=1;
+                         break;
+                        }
+                    }
+                    }
+                }
+                }
+             
             }
-         
+            catch(e){
+                console.log(e);
+            }
+           
             
             
           
