@@ -270,6 +270,7 @@ router.get('/refresh/:payment_id',VerifyToken,async function(request:jwt_request
                 headers:headers
             });
             if(payment_response){
+                console.log(payment_response)
                 if(payment_response.data){
                     let payments = payment_response.data['payment_request'].payments;
                 for(let j=0;j<payments[i].length;j++){
