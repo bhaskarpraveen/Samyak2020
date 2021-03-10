@@ -11,6 +11,7 @@ import user_roles from '../models/user_roles';
 import VerifyUserRole from '../middlewares/verify_user_role'
 import Payment from '../models/payments';
 import dotenv from 'dotenv';
+import e from 'express';
 dotenv.config();
 const JWT_KEY =  process.env.JWT_KEY ||'jsonwebtoken'
 
@@ -127,6 +128,7 @@ router.post('/add-payment',VerifyToken,async function(request:jwt_request,respon
                      return response.status(501).json({message:err.message})
                  })
                 }catch(e){
+                    console.log(e.response.data)
                     return response.status(501).json({message:e.response.data})
                 }
                 }else{
@@ -251,6 +253,51 @@ router.post('/edit-payment',VerifyToken,VerifyUserRole({collection:'Payments',pe
     //     amount:amount,
     //     status:status,
     // })
+});
+
+
+router.get('/refresh/:payment_id',VerifyToken,async function(request:jwt_request,response:express.Response){
+    let {payment_id} = request.params;
+    let allRequests = await PaymentRequest.find({});
+    for(let i=0;i<allRequests.length;i++){
+        // let findPay = await Payment.findOne({payment_request_id:allRequests[i].id})
+        let headers = { 'X-Api-Key': process.env.INSTAMOJO_KEY , 'X-Auth-Token': process.env.INSTAMOJO_TOKEN}
+        try{
+            let payment_response=  await axios({
+                method:'GET',
+                url:'https://www.instamojo.com/api/1.1/payment-requests/'+allRequests[i].id+'/'+payment_id,
+                headers:headers
+            });
+            if (payment_response.data['payment_request'].payment.status=="Credit"){
+                let findP=await Payment.findOne({payment_id:payment_id,payment_request_id:allRequests[i].id,status:"Credit"});
+            if(!findP){
+                let payment = new Payment({
+                    user_id:allRequests[i].user_id, 
+                    payment_id:payment_response.data['payment_request'].payment.payment_id,
+                    payment_request_id:payment_response.data['payment_request'].id,	
+                    instrument_type:payment_response.data['payment_request'].payment.instrument_type,
+                    billing_instrument:payment_response.data['payment_request'].payment.billing_instrument,
+                    amount:payment_response.data['payment_request'].payment.amount,
+                    status:payment_response.data['payment_request'].payment.status,
+                })
+                let promise =  payment.save()
+                promise.then(doc=>{
+                 return response.status(200).json({message:'Created',request:doc})
+             });
+     
+             promise.catch(err=>{
+                 return response.status(501).json({message:err.message})
+             })
+            }
+            }
+            
+          
+
+        }catch(e){
+            console.log(e.response.data)
+            return response.status(501).json({message:e.response.data})
+        }
+    }
 })
 
 export default router;
