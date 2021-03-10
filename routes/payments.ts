@@ -280,7 +280,7 @@ router.get('/refresh/:payment_id',VerifyToken,async function(request:jwt_request
                         if(!findP){
                         let payment = new Payment({
                             user_id:allRequests[i].user_id, 
-                            payment_id:payment_response.data['payment_request'].payment.payment_id,
+                            payment_id:payment_id,
                             payment_request_id:payment_response.data['payment_request'].id,	
                             instrument_type:payment_response.data['payment_request'].payment.instrument_type,
                             billing_instrument:payment_response.data['payment_request'].payment.billing_instrument,
