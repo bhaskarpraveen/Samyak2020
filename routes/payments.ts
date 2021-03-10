@@ -281,11 +281,11 @@ router.get('/refresh/:payment_id',VerifyToken,async function(request:jwt_request
                         let payment = new Payment({
                             user_id:allRequests[i].user_id, 
                             payment_id:payment_id,
-                            payment_request_id:payment_response.data['payment_request'].id,	
-                            instrument_type:payment_response.data['payment_request'].payment.instrument_type,
-                            billing_instrument:payment_response.data['payment_request'].payment.billing_instrument,
-                            amount:payment_response.data['payment_request'].payment.amount,
-                            status:payment_response.data['payment_request'].payment.status,
+                            payment_request_id:allRequests[i].id,	
+                            instrument_type:payments[j].instrument_type,
+                            billing_instrument:payments[j].billing_instrument,
+                            amount:payments[j].amount,
+                            status:payments[j].status,
                         })
                          await  payment.save()
                          flag=1;
