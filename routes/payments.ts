@@ -278,6 +278,7 @@ router.get('/refresh/:payment_id',VerifyToken,async function(request:jwt_request
                         if(payments[j].status=="Credit"){
                             let findP=await Payment.findOne({payment_id:payment_id,payment_request_id:allRequests[i].id,status:"Credit"});
                         if(!findP){
+                            console.log(payments[j])
                         let payment = new Payment({
                             user_id:allRequests[i].user_id, 
                             payment_id:payment_id,
