@@ -260,17 +260,20 @@ router.get('/refresh/:payment_id',VerifyToken,async function(request:jwt_request
     let {payment_id} = request.params;
     let allRequests = await PaymentRequest.find({});
     for(let i=0;i<allRequests.length;i++){
+        let flag=0;
         // let findPay = await Payment.findOne({payment_request_id:allRequests[i].id})
         let headers = { 'X-Api-Key': process.env.INSTAMOJO_KEY , 'X-Auth-Token': process.env.INSTAMOJO_TOKEN}
         try{
             let payment_response=  await axios({
                 method:'GET',
-                url:'https://www.instamojo.com/api/1.1/payment-requests/'+allRequests[i].id+'/'+payment_id,
+                url:'https://www.instamojo.com/api/1.1/payment-requests/'+allRequests[i].id,
                 headers:headers
             });
-            if (payment_response.data['payment_request'].payment.status=="Credit"){
-                let findP=await Payment.findOne({payment_id:payment_id,payment_request_id:allRequests[i].id,status:"Credit"});
-            if(!findP){
+            let payments = payment_response.data['payment_request'].payments;
+            for(let j=0;j<payments[i].length;j++){
+                if(payments[j].status=="Credit"){
+                    let findP=await Payment.findOne({payment_id:payment_id,payment_request_id:allRequests[i].id,status:"Credit"});
+                if(!findP){
                 let payment = new Payment({
                     user_id:allRequests[i].user_id, 
                     payment_id:payment_response.data['payment_request'].payment.payment_id,
@@ -281,20 +284,16 @@ router.get('/refresh/:payment_id',VerifyToken,async function(request:jwt_request
                     status:payment_response.data['payment_request'].payment.status,
                 })
                  await  payment.save()
-            //     promise.then(doc=>{
-            //      return response.status(200).json({message:'Created',request:doc})
-            //  });
-     
-            //  promise.catch(err=>{
-            //      return response.status(501).json({message:err.message})
-            //  })
+                 flag=1;
+                 break;
+                }
             }
             }
             
           
-
+            if(flag)break;
         }catch(e){
-            console.log(e.response.data)
+            console.log('--'+e.response.data)
             // return response.status(501).json({message:e.response.data})
         }
 
