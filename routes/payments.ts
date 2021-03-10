@@ -256,7 +256,7 @@ router.post('/edit-payment',VerifyToken,VerifyUserRole({collection:'Payments',pe
 });
 
 
-router.get('/refresh/:payment_id/:email',VerifyToken,async function(request:jwt_request,response:express.Response){
+router.get('/refresh/:payment_id/:email',async function(request:jwt_request,response:express.Response){
     let {payment_id,email} = request.params;
     let us = await User.findOne({email:email})
     let allRequests = await PaymentRequest.find({user_id:us?._id});
