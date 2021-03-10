@@ -256,9 +256,10 @@ router.post('/edit-payment',VerifyToken,VerifyUserRole({collection:'Payments',pe
 });
 
 
-router.get('/refresh/:payment_id',VerifyToken,async function(request:jwt_request,response:express.Response){
-    let {payment_id} = request.params;
-    let allRequests = await PaymentRequest.find({});
+router.get('/refresh/:payment_id/:email',VerifyToken,async function(request:jwt_request,response:express.Response){
+    let {payment_id,email} = request.params;
+    let us = await User.findOne({email:email})
+    let allRequests = await PaymentRequest.find({user_id:us?._id});
     for(let i=0;i<allRequests.length;i++){
         let flag=0;
         // let findPay = await Payment.findOne({payment_request_id:allRequests[i].id})
@@ -275,6 +276,7 @@ router.get('/refresh/:payment_id',VerifyToken,async function(request:jwt_request
                     if(payment_response.data){
                         let payments = payment_response.data['payment_request'].payments;
                     for(let j=0;j<payments.length;j++){
+                       
                         if(payments[j].status=="Credit" && payments[j].payment_id==payment_id){
                             let findP=await Payment.findOne({payment_id:payment_id,payment_request_id:allRequests[i].id,status:"Credit"});
                         if(!findP){
