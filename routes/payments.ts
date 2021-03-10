@@ -294,8 +294,8 @@ router.get('/refresh/:payment_id',VerifyToken,async function(request:jwt_request
           
 
         }catch(e){
-            console.log(e.response.data)
-            return response.status(501).json({message:e.response.data})
+            // console.log(e.response.data)
+            // return response.status(501).json({message:e.response.data})
         }
     }
 })
