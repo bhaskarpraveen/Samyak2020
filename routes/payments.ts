@@ -280,14 +280,14 @@ router.get('/refresh/:payment_id',VerifyToken,async function(request:jwt_request
                     amount:payment_response.data['payment_request'].payment.amount,
                     status:payment_response.data['payment_request'].payment.status,
                 })
-                let promise =  payment.save()
-                promise.then(doc=>{
-                 return response.status(200).json({message:'Created',request:doc})
-             });
+                 await  payment.save()
+            //     promise.then(doc=>{
+            //      return response.status(200).json({message:'Created',request:doc})
+            //  });
      
-             promise.catch(err=>{
-                 return response.status(501).json({message:err.message})
-             })
+            //  promise.catch(err=>{
+            //      return response.status(501).json({message:err.message})
+            //  })
             }
             }
             
@@ -297,7 +297,9 @@ router.get('/refresh/:payment_id',VerifyToken,async function(request:jwt_request
             // console.log(e.response.data)
             // return response.status(501).json({message:e.response.data})
         }
+
     }
+    return response.status(200).json({message:'Done'})
 })
 
 export default router;
