@@ -25,7 +25,7 @@ router.get('/check-token',async function(request:express.Request,response:expres
         }
         else if(data){
             return response.status(200).json(true)
-           
+  
         }
     })
     
@@ -35,7 +35,7 @@ router.get('/details',VerifyToken,async function(request:jwt_request,response:ex
     let user_id = request.tokenData?.userId;
     if(user_id){
         let user = await User.findOne({_id:user_id},'name email mobile college current_year branch gender college_id samyak_id');
-        let payment = await Payment.findOne({user_id:user?._id});
+        let payment = await Payment.findOne({user_id:user?._id,status:"Credit"});
         return response.status(200).json({user:user,payment:payment});
     }else{
         return response.status(501).json({message:'user not found'})
