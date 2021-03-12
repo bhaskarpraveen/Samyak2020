@@ -114,8 +114,8 @@ router.post('/add-payment',VerifyToken,async function(request:jwt_request,respon
                         user_id:user._id, 
                         payment_id:payment_response.data['payment_request'].payment.payment_id,
                         payment_request_id:payment_response.data['payment_request'].id,	
-                        instrument_type:payment_response.data['payment_request'].payment.instrument_type,
-                        billing_instrument:payment_response.data['payment_request'].payment.billing_instrument,
+                        instrument_type:payment_response.data['payment_request'].payment.instrument_type||'Unknown',
+                        billing_instrument:payment_response.data['payment_request'].payment.billing_instrument||'Unknown',
                         amount:payment_response.data['payment_request'].payment.amount,
                         status:payment_response.data['payment_request'].payment.status,
                     })
