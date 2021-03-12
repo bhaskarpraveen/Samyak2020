@@ -100,7 +100,7 @@ router.post('/delete-role',VerifyToken,VerifyUserRole({collection:'Roles',permis
             Role.deleteOne({_id:RoleId})
                 .then(async ()=>{
                     await Permission.deleteOne({role_id:role_id});
-                    await UserRole.deleteOne({role_id:RoleId});
+                    await UserRole.remove({role_id:RoleId});
                     return response.status(200).json({message:'Successfully deleted'})
                 })
                 .catch(err=>{
