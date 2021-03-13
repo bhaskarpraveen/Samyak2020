@@ -334,12 +334,12 @@ router.post('/webhook',async function(request:express.Request,response:express.R
         let FindPayment = await Payment.findOne({payment_id:payment_id,payment_request_id:payment_request_id});
         console.log({FindPayment})
         if(!FindPayment){
-            let FindRequest = await PaymentRequest.findOne({id:mongoose.Types.ObjectId(payment_request_id)});
+            let FindRequest = await PaymentRequest.findOne({id:payment_request_id});
             console.log({FindRequest});
             if(FindRequest){
 
-            
-            let user = await User.findOne({_id:FindRequest.user_id});
+        
+            let user = await User.findOne({_id:payment_request_id});
             console.log({user})
             let headers = { 'X-Api-Key': process.env.INSTAMOJO_KEY , 'X-Auth-Token': process.env.INSTAMOJO_TOKEN}
             if(user){
