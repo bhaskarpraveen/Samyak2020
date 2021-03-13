@@ -250,7 +250,8 @@ router.get('/all-events',VerifyToken,async function(request:jwt_request,response
                     $project:{
                         '__v':0,
                         'type.__v':0,
-                        'department.__v':0
+                        'department.__v':0,
+                        'image':0
                     }
                     }
                 ])
