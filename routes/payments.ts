@@ -329,18 +329,18 @@ router.get('/refresh/:payment_id/:email',async function(request:jwt_request,resp
 router.post('/webhook',async function(request:express.Request,response:express.Response){
     console.log('Webhook called');
     let {payment_request_id,payment_id,status} = request.body;
-    console.log({payment_id,payment_request_id})
+    
     if(payment_id&&payment_request_id&&status){
         let FindPayment = await Payment.findOne({payment_id:payment_id,payment_request_id:payment_request_id});
-        console.log({FindPayment})
+        
         if(!FindPayment){
             let FindRequest = await PaymentRequest.findOne({id:payment_request_id});
-            console.log({FindRequest});
+            
             if(FindRequest){
 
         
             let user = await User.findOne({_id:FindRequest.user_id});
-            console.log({user})
+            
             let headers = { 'X-Api-Key': process.env.INSTAMOJO_KEY , 'X-Auth-Token': process.env.INSTAMOJO_TOKEN}
             if(user){
 
