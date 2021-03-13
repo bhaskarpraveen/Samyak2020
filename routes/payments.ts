@@ -125,6 +125,7 @@ router.post('/add-payment',VerifyToken,async function(request:jwt_request,respon
                  });
          
                  promise.catch(err=>{
+                     console.log(err.message)
                      return response.status(501).json({message:err.message})
                  })
                 }catch(e){
@@ -132,18 +133,22 @@ router.post('/add-payment',VerifyToken,async function(request:jwt_request,respon
                     return response.status(501).json({message:e.response.data})
                 }
                 }else{
+                    console.log('record exists')
                     return response.status(501).json({message:'record already exist'})
                 }
                 
 
             }else{
+                console.log('enter all')
                 return response.status(501).json({message:'Enter all details'})
             }
         }else{
+            console.log('invalid user')
             return response.status(501).json({message:'Invalid user'})
         }
     
     }else{
+        console.log('invalid token')
         return response.status(501).json({message:'Invalid token'})
     }
    
@@ -329,7 +334,7 @@ router.post('/webhook',async function(request:express.Request,response:express.R
         let FindPayment = await Payment.findOne({payment_id:payment_id,payment_request_id:payment_request_id});
         console.log({FindPayment})
         if(!FindPayment){
-            let FindRequest = await PaymentRequest.findOne({_id:mongoose.Types.ObjectId(payment_request_id)});
+            let FindRequest = await PaymentRequest.findOne({id:mongoose.Types.ObjectId(payment_request_id)});
             console.log({FindRequest});
             if(FindRequest){
 
