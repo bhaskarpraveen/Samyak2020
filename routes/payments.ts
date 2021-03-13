@@ -11,7 +11,7 @@ import user_roles from '../models/user_roles';
 import VerifyUserRole from '../middlewares/verify_user_role'
 import Payment from '../models/payments';
 import dotenv from 'dotenv';
-import e from 'express';
+import mongoose from 'mongoose';
 dotenv.config();
 const JWT_KEY =  process.env.JWT_KEY ||'jsonwebtoken'
 
@@ -327,7 +327,7 @@ router.post('/webhook',async function(request:express.Request,response:express.R
     if(payment_id&&payment_request_id&&status){
         let FindPayment = await Payment.findOne({payment_id:payment_id,payment_request_id:payment_request_id});
         if(!FindPayment){
-            let FindRequest = await PaymentRequest.findOne({_id:payment_request_id});
+            let FindRequest = await PaymentRequest.findOne({_id:mongoose.Types.ObjectId(payment_request_id)});
             if(FindRequest){
 
             
