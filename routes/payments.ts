@@ -34,7 +34,7 @@ router.get('/create-request',VerifyToken,async function(request:jwt_request,resp
             buyer_name: user.name,
             redirect_url: 'https://klsamyak.in/#/payment-verification',
             send_email: false,
-            // webhook: 'https://klsamyak-dev.tk/payments/webhook',
+            webhook: 'https://klsamyak.in/api/payments/webhook',
             send_sms: true,
             email: user.email,
             allow_repeated_payments: false
@@ -318,6 +318,67 @@ router.get('/refresh/:payment_id/:email',async function(request:jwt_request,resp
 
     }
     return response.status(200).json({message:'Done'})
+});
+
+
+router.post('/webhook',async function(request:express.Request,response:express.Response){
+    console.log('Webhook called');
+    let {payment_request_id,payment_id,status} = request.body;
+    if(payment_id&&payment_request_id&&status){
+        let FindPayment = await Payment.findOne({payment_id:payment_id,payment_request_id:payment_request_id});
+        if(!FindPayment){
+            let FindRequest = await PaymentRequest.findOne({_id:payment_request_id});
+            if(FindRequest){
+
+            
+            let user = await User.findOne({_id:FindRequest.user_id});
+            let headers = { 'X-Api-Key': process.env.INSTAMOJO_KEY , 'X-Auth-Token': process.env.INSTAMOJO_TOKEN}
+            if(user){
+
+            
+            try{
+                let payment_response=  await axios({
+                    method:'GET',
+                    url:'https://www.instamojo.com/api/1.1/payment-requests/'+payment_request_id+'/'+payment_id,
+                    headers:headers
+                })
+
+
+                let payment = new Payment({
+                    user_id:user._id, 
+                    payment_id:payment_response.data['payment_request'].payment.payment_id,
+                    payment_request_id:payment_response.data['payment_request'].id,	
+                    instrument_type:payment_response.data['payment_request'].payment.instrument_type||'Unknown',
+                    billing_instrument:payment_response.data['payment_request'].payment.billing_instrument||'Unknown',
+                    amount:payment_response.data['payment_request'].payment.amount,
+                    status:payment_response.data['payment_request'].payment.status,
+                })
+                let promise =  payment.save()
+                promise.then(doc=>{
+                    console.log('webhook worked')
+                 return response.status(200).json({message:'Created',request:doc})
+             });
+     
+             promise.catch(err=>{
+                 return response.status(501).json({message:err.message})
+             })
+            }catch(e){
+                console.log(e.response.data)
+                return response.status(501).json({message:e.response.data})
+            }
+        }else{
+            return response.status(501).json({message:'user not found'});        
+        }
+    }else{
+        return response.status(501).json({message:'request not found'})
+
+    } 
+}else{
+            return response.status(200).json({message:'Already found'});
+        }
+    }else{
+        return response.status(501).json({message:'Invalid details'})
+    }
 })
 
 export default router;
