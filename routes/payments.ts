@@ -103,35 +103,41 @@ router.post('/add-payment',VerifyToken,async function(request:jwt_request,respon
             if(payment_id&&payment_status&&payment_request_id){
                 let checkpayment = await Payment.findOne({payment_request_id:payment_request_id,payment_id:payment_id});
                 if(!checkpayment){
-                    let headers = { 'X-Api-Key': process.env.INSTAMOJO_KEY , 'X-Auth-Token': process.env.INSTAMOJO_TOKEN}
-                try{
-                    let payment_response=  await axios({
-                        method:'GET',
-                        url:'https://www.instamojo.com/api/1.1/payment-requests/'+payment_request_id+'/'+payment_id,
-                        headers:headers
-                    })
-                    let payment = new Payment({
-                        user_id:user._id, 
-                        payment_id:payment_response.data['payment_request'].payment.payment_id,
-                        payment_request_id:payment_response.data['payment_request'].id,	
-                        instrument_type:payment_response.data['payment_request'].payment.instrument_type||'Unknown',
-                        billing_instrument:payment_response.data['payment_request'].payment.billing_instrument||'Unknown',
-                        amount:payment_response.data['payment_request'].payment.amount,
-                        status:payment_response.data['payment_request'].payment.status,
-                    })
-                    let promise =  payment.save()
-                    promise.then(doc=>{
-                     return response.status(200).json({message:'Created',request:doc})
-                 });
-         
-                 promise.catch(err=>{
-                     console.log(err.message)
-                     return response.status(501).json({message:err.message})
-                 })
-                }catch(e){
-                    console.log(e.response.data)
-                    return response.status(501).json({message:e.response.data})
-                }
+                    let checkuser = await Payment.findOne({user_id:user._id});
+                    if(!checkuser){
+                        let headers = { 'X-Api-Key': process.env.INSTAMOJO_KEY , 'X-Auth-Token': process.env.INSTAMOJO_TOKEN}
+                        try{
+                            let payment_response=  await axios({
+                                method:'GET',
+                                url:'https://www.instamojo.com/api/1.1/payment-requests/'+payment_request_id+'/'+payment_id,
+                                headers:headers
+                            })
+                            let payment = new Payment({
+                                user_id:user._id, 
+                                payment_id:payment_response.data['payment_request'].payment.payment_id,
+                                payment_request_id:payment_response.data['payment_request'].id,	
+                                instrument_type:payment_response.data['payment_request'].payment.instrument_type||'Unknown',
+                                billing_instrument:payment_response.data['payment_request'].payment.billing_instrument||'Unknown',
+                                amount:payment_response.data['payment_request'].payment.amount,
+                                status:payment_response.data['payment_request'].payment.status,
+                            })
+                            let promise =  payment.save()
+                            promise.then(doc=>{
+                             return response.status(200).json({message:'Created',request:doc})
+                         });
+                 
+                         promise.catch(err=>{
+                             console.log(err.message)
+                             return response.status(501).json({message:err.message})
+                         })
+                        }catch(e){
+                            console.log(e.response.data)
+                            return response.status(501).json({message:e.response.data})
+                        }
+                    }else{
+                        return response.status(501).json({message:'User already paid'})
+                    }
+                   
                 }else{
                     console.log('record exists')
                     return response.status(501).json({message:'record already exist'})
