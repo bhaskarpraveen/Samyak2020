@@ -156,5 +156,32 @@ router.post('/remove-user',VerifyToken,VerifyUserRole({collection:'Events',permi
     }
 })
 
+router.post('/edit-slot',VerifyToken,VerifyUserRole({collection:'Events',permission:'manage_batches'}),async function(request:jwt_request,response:express.Response){
+    const {_id,name,meet_link,date,start_time,end_time,multiple_events_allowed} = request.body;
+    if(_id&&name&&meet_link&&date&&start_time&&end_time&&( multiple_events_allowed!=null)){
+        let findSlot = await EventSlot.findOne({_id:_id});
+        if(findSlot){
+            let update = EventSlot.updateOne({_id:_id},{$set:{
+                name:name,
+                meet_link:meet_link,
+                date:date,
+                start_time:start_time,
+                end_time:end_time,
+                multiple_events_allowed:multiple_events_allowed
+            }});
+            update.then(doc=>{
+                return response.status(200).json(doc)
+            });
+            update.catch(err=>{
+                return response.status(501).json({message:err.message})
+            })
+        }else{
+            return response.status(501).json({message:'slot not found'})
+        }
+    }else{
+        return response.status(501).json({message:'Enter valid details'})
+    }
+
+})
 
 export default router;
