@@ -175,14 +175,6 @@ router.get('/all-payments',VerifyToken,VerifyUserRole({collection:'Payments',per
             }
         },
         {
-            $lookup:{
-                from: 'payment_requests',
-                localField: "payment_request_id",
-                foreignField: "id",
-                as: "payment_request"        
-            }
-        },
-        {
     
         $project:{
             'user.password':0,
