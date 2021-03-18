@@ -161,10 +161,12 @@ router.post('/edit-slot',VerifyToken,VerifyUserRole({collection:'Events',permiss
     if(_id&&name&&meet_link&&date&&start_time&&end_time&&( multiple_events_allowed!=null)){
         let findSlot = await EventSlot.findOne({_id:_id});
         if(findSlot){
+            let t_date = new Date(date);
+            t_date.setDate(t_date.getDate()+1)
             let update = EventSlot.updateOne({_id:_id},{$set:{
                 name:name,
                 meet_link:meet_link,
-                date:new Date(date),
+                date:t_date,
                 start_time:start_time,
                 end_time:end_time,
                 multiple_events_allowed:multiple_events_allowed
