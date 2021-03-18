@@ -329,7 +329,7 @@ router.post('/webhook',async function(request:express.Request,response:express.R
     let {payment_request_id,payment_id,status} = request.body;
     
     if(payment_id&&payment_request_id&&status){
-        let FindPayment = await Payment.findOne({payment_id:payment_id,payment_request_id:payment_request_id});
+        let FindPayment = await Payment.findOne({payment_id:payment_id,payment_request_id:payment_request_id,status:"Credit"});
         
         if(!FindPayment){
             let FindRequest = await PaymentRequest.findOne({id:payment_request_id});
