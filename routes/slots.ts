@@ -164,7 +164,7 @@ router.post('/edit-slot',VerifyToken,VerifyUserRole({collection:'Events',permiss
             let update = EventSlot.updateOne({_id:_id},{$set:{
                 name:name,
                 meet_link:meet_link,
-                date:date,
+                date:new Date(date),
                 start_time:start_time,
                 end_time:end_time,
                 multiple_events_allowed:multiple_events_allowed
