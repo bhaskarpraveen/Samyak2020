@@ -19,14 +19,13 @@ router.post('/add',VerifyToken,VerifyUserRole({collection:'Events',permission:'m
         let findEvent = await Event.findOne({_id:eventId});
         if(findEvent){
             let findSlot = await EventSlot.findOne({name:name,event_id:findEvent._id});
-           let t_date = new Date(date)
-           t_date.setDate(t_date.getDate()+1)
+          
             if(!findSlot){
                 let new_slot = new EventSlot({
                     name:name,
                     meet_link:meet_link,
                     event_id:eventId,
-                    date:t_date,
+                    date:date,
                     start_time:start_time,
                     multiple_events_allowed: multiple_events_allowed,
                     end_time:end_time
@@ -162,12 +161,11 @@ router.post('/edit-slot',VerifyToken,VerifyUserRole({collection:'Events',permiss
     if(_id&&name&&meet_link&&date&&start_time&&end_time&&( multiple_events_allowed!=null)){
         let findSlot = await EventSlot.findOne({_id:_id});
         if(findSlot){
-            let t_date = new Date(date);
-            t_date.setDate(t_date.getDate()+1)
+         
             let update = EventSlot.updateOne({_id:_id},{$set:{
                 name:name,
                 meet_link:meet_link,
-                date:t_date,
+                date:date,
                 start_time:start_time,
                 end_time:end_time,
                 multiple_events_allowed:multiple_events_allowed
