@@ -24,4 +24,5 @@ let PaymentSchema = new Schema({
     updated_at: { type: Date },
 })
 
+PaymentSchema.index({user_id:1}, { unique: true })
 export default model<IPaymentSchema>('payments',PaymentSchema)
