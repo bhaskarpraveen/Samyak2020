@@ -19,13 +19,14 @@ router.post('/add',VerifyToken,VerifyUserRole({collection:'Events',permission:'m
         let findEvent = await Event.findOne({_id:eventId});
         if(findEvent){
             let findSlot = await EventSlot.findOne({name:name,event_id:findEvent._id});
-           
+           let t_date = new Date(date)
+           t_date.setDate(t_date.getDate()+1)
             if(!findSlot){
                 let new_slot = new EventSlot({
                     name:name,
                     meet_link:meet_link,
                     event_id:eventId,
-                    date:date,
+                    date:t_date,
                     start_time:start_time,
                     multiple_events_allowed: multiple_events_allowed,
                     end_time:end_time
