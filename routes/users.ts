@@ -95,7 +95,7 @@ router.post('/register',async function(request:express.Request,response:express.
 router.post('/login',async function(request:express.Request,response:express.Response){
     const {email,password} = request.body;
     if(email && password){
-        const user= await User.findOne({email:email})
+        const user= await User.findOne({email:email.toLowerCase()})
             if(user){
                 //validate password
                 if(user.isValid(password)){
@@ -103,7 +103,7 @@ router.post('/login',async function(request:express.Request,response:express.Res
                     if(user.isVerified()){
                         //check email verification
                         if(user.verifyStatus()){
-                            let token = jwt.sign({email:email,userId:user._id},JWT_KEY,{expiresIn:'3h'})
+                            let token = jwt.sign({email:email.toLowerCase(),userId:user._id},JWT_KEY,{expiresIn:'3h'})
                             return response.status(200).json({token:token})
                         }else{
                             return response.status(501).json({message:'This account is currently blocked/inactive'})
