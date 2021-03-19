@@ -55,7 +55,7 @@ router.post('/register',async function(request:express.Request,response:express.
 
             let newuser =  new User({
                 name:name,
-                email:email,
+                email:email.toLowerCase(),
                 mobile:mobile,
                 college:college,
                 current_year:current_year,
