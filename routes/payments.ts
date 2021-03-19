@@ -395,6 +395,44 @@ router.post('/webhook',async function(request:express.Request,response:express.R
     }else{
         return response.status(501).json({message:'Invalid details'})
     }
+});
+
+
+router.get('/check-user-dupes',async function(request:express.Request,response:express.Response){
+    let users = await User.find({});
+
+    for(let i=0;i<users.length;i++){
+        let c = await User.find({"email":users[i].email});
+        if(c.length>1){
+          
+            let d:any=[];
+            let del=[]
+            for(let j=0;j<c.length;j++){
+                
+                let checkPayment = await Payment.findOne({user_id:c[j]._id,status:"Credit"});
+                if(!checkPayment){
+                    d.push(c[j]);
+                  
+                }
+               
+            }
+            if(d.length==c.length){
+                del=[]
+                del = d.slice(2,-1)
+            }else{
+                del=d;
+            }
+
+            for(let j=0;j<del.length;j++){
+              await User.remove({_id:del[j]._id});
+            }
+            
+            // if(!checkPayment){
+
+            // }
+        }
+
+    }
 })
 
 export default router;
