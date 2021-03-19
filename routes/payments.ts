@@ -424,7 +424,9 @@ router.get('/check-user-dupes',async function(request:express.Request,response:e
             }
 
             for(let j=0;j<del.length;j++){
+                console.log(del[j].email)
               await User.remove({_id:del[j]._id});
+
             }
             
             // if(!checkPayment){
